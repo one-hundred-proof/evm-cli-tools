@@ -1,3 +1,7 @@
+set -o allexport
+source .env
+set +o allexport
+
 if [ $# -lt 4 ]; then
   echo "Usage: $(basename $0) <address> <topic> <fromBlock> <toBlock>"
   exit 1
