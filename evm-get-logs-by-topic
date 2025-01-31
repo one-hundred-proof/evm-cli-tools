@@ -12,4 +12,4 @@ TOPIC=$2
 FROM=$3
 TO=$4
 
-curl "https://api.etherscan.io/api?module=logs&action=getLogs&address=$ADDRESS&fromBlock=$FROM&toBlock=$TO&apikey=$ETHERSCAN_API_KEY&topic0=$TOPIC"
+curl "https://api.etherscan.io/api?module=logs&action=getLogs&address=$ADDRESS&fromBlock=$FROM&toBlock=$TO&apikey=$ETHERSCAN_API_KEY&topic0=$TOPIC" | jq

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import fs from 'fs';
