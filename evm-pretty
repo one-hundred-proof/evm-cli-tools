@@ -4,7 +4,7 @@ function formatLargeNumber(num, decimals = 18) {
     let numStr = BigInt(num).toString(); // Convert number to string
 
    // Ensure the number has at least 'decimals' digits for decimal separation
-    if (numStr.length < decimals) {
+    if (numStr.length <= decimals) {
         numStr = numStr.padStart(decimals, '0'); // Pad with leading zeros
         return "0_" + numStr;
     }
