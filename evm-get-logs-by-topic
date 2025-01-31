@@ -1,6 +1,8 @@
+export THIS_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 set -o allexport
-source .env
+source $THIS_DIR/.env
 set +o allexport
+
 
 if [ $# -lt 4 ]; then
   echo "Usage: $(basename $0) <address> <topic> <fromBlock> <toBlock>"

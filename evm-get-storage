@@ -1,8 +1,10 @@
 #!/bin/bash
 
+export THIS_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 set -o allexport
-source .env
+source $THIS_DIR/.env
 set +o allexport
+
 
 if [ "$INFURA_API_KEY" = "" ]; then
   echo "Please set INFURA_API_KEY in the environment"
