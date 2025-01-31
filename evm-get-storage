@@ -26,11 +26,7 @@ fi
 CONTRACT=$1
 SLOT=$2
 
-if [ $# -eq 2 ]; then
-  BLOCK="latest"
-else
-  BLOCK=$3
-fi
+BLOCK="${3:-latest}"
 
 echo -n "$SLOT: "
 curl -s $PREFIX/$INFURA_API_KEY \
