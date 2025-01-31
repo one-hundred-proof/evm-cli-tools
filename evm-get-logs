@@ -1,6 +1,10 @@
+set -o allexport
+source .env
+set +o allexport
+
 if [ $# -lt 3 ]; then
   echo "Usage: $(basename $0) <address> <fromBlock> <toBlock>"
   exit 1
 fi
 
-curl "https://api.etherscan.io/api?module=logs&action=getLogs&address=$1&fromBlock=$2&toBlock=$3&apikey=$ETHERSCAN_API_KEY"
+curl "https://api.etherscan.io/api?module=logs&action=getLogs&address=$1&fromBlock=$2&toBlock=$3&apikey=$ETHERSCAN_API_KEY" | jq

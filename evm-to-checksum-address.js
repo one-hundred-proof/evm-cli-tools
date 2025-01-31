@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+// Use Foundry's "cast to-check-sum-address" instead
+
 import web3 from "web3";
 
 if (process.argv.length < 3) {
