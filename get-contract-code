@@ -51,7 +51,6 @@ const getSourceFilesFromAddress = async (address) => {
 
   const sourceCode = data.result[0].SourceCode;
 
-  let dir = fs.mkdtempSync(`${address}-code-`);
   let areMultipleFiles = false;
 
   let sourceObj;
@@ -64,9 +63,16 @@ const getSourceFilesFromAddress = async (address) => {
     }
   }
 
+  let name;
+  let dir;
+
   if (areMultipleFiles) {
     for (let fileName in sourceObj) {
-      if (sourceObj.hasOwnProperty(fileName)) {
+      if (!name) {
+        name = path.basename(fileName, ".sol");
+        dir = fs.mkdtempSync(`${name}-${address}-`);
+      }
+      if (dir && sourceObj.hasOwnProperty(fileName)) {
         mkDirAndWriteFile(dir, fileName, sourceObj[fileName].content);
       }
     }
