@@ -11,17 +11,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '.env') });
-const { ETHERSCAN_API_KEY, ETHERSCAN_API_DOMAIN } = process.env;
+const { EVMSCAN_API_KEY, EVMSCAN_API_DOMAIN } = process.env;
 
-if (!ETHERSCAN_API_KEY) {
-  console.log("Please export ETHERSCAN_API_KEY or put it in .env");
+if (!EVMSCAN_API_KEY) {
+  console.log("Please export EVMSCAN_API_KEY or put it in .env");
   exit(1);
 }
 
-let etherscanApiDomain = "api.etherscan.io";
+let evmscanApiDomain = "api.etherscan.io"; // default to etherscan.io
 //
-if (ETHERSCAN_API_DOMAIN) {
-  etherscanApiDomain = ETHERSCAN_API_DOMAIN;
+if (EVMSCAN_API_DOMAIN) {
+  evmscanApiDomain = EVMSCAN_API_DOMAIN;
 }
 
 if (process.argv.length < 3) {
@@ -31,7 +31,7 @@ if (process.argv.length < 3) {
 const address = process.argv[2];
 
 const mkSourceCodeUrl = (address) => {
-  return `https:///${etherscanApiDomain}/api?module=contract&action=getsourcecode&address=${address}&apikey=${ETHERSCAN_API_KEY}`
+  return `https://${evmscanApiDomain}/api?module=contract&action=getsourcecode&address=${address}&apikey=${EVMSCAN_API_KEY}`
 }
 
 const mkDirAndWriteFile = (dir, fileName, content) => {

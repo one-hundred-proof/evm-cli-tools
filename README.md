@@ -7,24 +7,26 @@ $ npm install
 ```
 
 ## The tools
-### `diff-contract-code.js`
+### `diff-contract-code`  and `get-contract-code`
 
 This tool will download the verified smart contract code deployed at a particular address and do a file-by-file diff.
 
 #### Configuration
 
 1.
-The environment variable `ETHERSCAN_API_KEY` is required. It can be placed in a `.env` file or exported.
+  Two environment variables control the behaviour of the tools: `EVMSCAN_API_KEY` and `EVMSCAN_API_DOMAIN`
+   - `EVMSCAN_API_KEY` is required. It can be placed in a `.env` file or exported.
+   - `EVMSCAN_API_DOMAIN` is optional and will default to `api.etherscan.io`. However, if you want to use the API on other EVM-compatible blockchains you will have to specify this. e.g. `EVMSCAN_API_DOMAIN=api.fraxscan.com`
 
 2.
-The tool can also be used with other block explorer APIs by setting the `ETHERSCAN_API_DOMAIN` environment variable. However, they must be clones of api.etherscan.io
+  The tool can also be used with other block explorer APIs by setting the `EVMSCAN_API_DOMAIN` environment variable. However, they must be clones of api.etherscan.io
 
-eg. `export ETHERSCAN_API_DOMAIN=api.polygonscan.com`
+eg. `export EVMSCAN_API_DOMAIN=api.polygonscan.com`
 
 #### Example
 
 ```bash
-$ node diff-contract-code.js 0x19890cf5c9a0b8d2f71eb71347d126b6f7d78b76 0x83597765904e28e3a360c17cb1f5635cbcbfdd63
+$ diff-contract-code 0x19890cf5c9a0b8d2f71eb71347d126b6f7d78b76 0x83597765904e28e3a360c17cb1f5635cbcbfdd63
 ```
 
 **Output**
