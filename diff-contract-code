@@ -18,7 +18,7 @@ if (!EVMSCAN_API_KEY) {
   exit(1);
 }
 
-let evmscanApiDomain = "api.etherscan.io";
+let evmscanApiDomain = "$EVMSCAN_API_DOMAIN";
 //
 if (EVMSCAN_API_DOMAIN) {
   evmscanApiDomain = EVMSCAN_API_DOMAIN;

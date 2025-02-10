@@ -11,4 +11,4 @@ fi
 FROM="${2:-1}"
 TO="${3:-latest}"
 
-curl "https://api.etherscan.io/api?module=logs&action=getLogs&address=$1&fromBlock=$FROM&toBlock=$TO&apikey=$EVMSCAN_API_KEY" | jq
+curl "https://$EVMSCAN_API_DOMAIN/api?module=logs&action=getLogs&address=$1&fromBlock=$FROM&toBlock=$TO&apikey=$EVMSCAN_API_KEY" | jq

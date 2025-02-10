@@ -16,10 +16,10 @@ This tool will download the verified smart contract code deployed at a particula
 1.
   Two environment variables control the behaviour of the tools: `EVMSCAN_API_KEY` and `EVMSCAN_API_DOMAIN`
    - `EVMSCAN_API_KEY` is required. It can be placed in a `.env` file or exported.
-   - `EVMSCAN_API_DOMAIN` is optional and will default to `api.etherscan.io`. However, if you want to use the API on other EVM-compatible blockchains you will have to specify this. e.g. `EVMSCAN_API_DOMAIN=api.fraxscan.com`
+   - `EVMSCAN_API_DOMAIN` is optional and will default to `$EVMSCAN_API_DOMAIN`. However, if you want to use the API on other EVM-compatible blockchains you will have to specify this. e.g. `EVMSCAN_API_DOMAIN=api.fraxscan.com`
 
 2.
-  The tool can also be used with other block explorer APIs by setting the `EVMSCAN_API_DOMAIN` environment variable. However, they must be clones of api.etherscan.io
+  The tool can also be used with other block explorer APIs by setting the `EVMSCAN_API_DOMAIN` environment variable. However, they must be clones of $EVMSCAN_API_DOMAIN
 
 eg. `export EVMSCAN_API_DOMAIN=api.polygonscan.com`
 
