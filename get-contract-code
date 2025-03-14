@@ -18,6 +18,12 @@ if (!EVMSCAN_API_KEY) {
   exit(1);
 }
 
+if (!EVMSCAN_API_DOMAIN) {
+  console.log("Please export EVMSCAN_API_DOMAIN or put it in .env");
+  exit(1);
+}
+
+
 let evmscanApiDomain = "$EVMSCAN_API_DOMAIN"; // default to etherscan.io
 //
 if (EVMSCAN_API_DOMAIN) {
