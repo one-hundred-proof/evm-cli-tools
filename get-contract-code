@@ -50,8 +50,10 @@ const getSourceFilesFromAddress = async (address) => {
   const response = await fetch(mkSourceCodeUrl(address));
 
   const data = await response.json();
+
   if (data.status != "1") {
     console.log(`Could not retrieve source code from address ${address}`);
+    console.log(data);
     exit(1);
   }
 
