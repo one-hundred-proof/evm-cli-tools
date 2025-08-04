@@ -32,8 +32,8 @@ const yargsInstance = setupYargs(yargs(hideBin(process.argv)),
     type: 'string',
     default: 'true'
   })
-  .example(chalk.bold('$0 0x1234... 0x5678...'), `${chalk.green('Compare contracts with word-level diff')}`)
-  .example(chalk.bold('$0 --chain polygon 0x1234... 0x5678... false'), `${chalk.green('Compare contracts on Polygon with line-level diff')}`);
+  .example('$0 0x1234... 0x5678...', `${chalk.green('Compare contracts with word-level diff')}`)
+  .example('$0 --chain polygon 0x1234... 0x5678... false', `${chalk.green('Compare contracts on Polygon with line-level diff')}`);
 
 const argv = yargsInstance.argv;
 

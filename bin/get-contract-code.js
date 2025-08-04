@@ -21,8 +21,8 @@ const yargsInstance = setupYargs(yargs(hideBin(process.argv)),
     type: 'string',
     demandOption: true
   })
-  .example(chalk.bold('$0 0x1234...'), `${chalk.green('Get source code for contract 0x1234...')}`)
-  .example(chalk.bold('$0 --chain polygon 0x1234...'), `${chalk.green('Get source code for contract on Polygon')}`);
+  .example('$0 0x1234...', `${chalk.green('Get source code for contract 0x1234...')}`)
+  .example('$0 --chain polygon 0x1234...', `${chalk.green('Get source code for contract on Polygon')}`);
 
 const argv = yargsInstance.argv;
 
