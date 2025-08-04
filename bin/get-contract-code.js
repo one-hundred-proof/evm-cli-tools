@@ -5,35 +5,48 @@ import fs from 'fs';
 import path from 'path';
 import { exit } from 'process';
 import { fileURLToPath } from 'url';
-import { getCurrentChainConfig, cleanArgs } from '../lib/config-utils.js';
+import chalk from 'chalk';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import { getCurrentChainConfig, setupYargs } from '../lib/config-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Setup command line arguments with yargs
+const argv = setupYargs(yargs(hideBin(process.argv)), 
+  `${chalk.bold('Usage:')} $0 [options] <address>`)
+  .positional('address', {
+    describe: 'Contract address to get source code for',
+    type: 'string',
+    demandOption: true
+  })
+  .example('$0 0x1234...', 'Get source code for contract 0x1234...')
+  .example('$0 --chain polygon 0x1234...', 'Get source code for contract on Polygon')
+  .argv;
+
 // Get chain configuration
-const chainConfig = getCurrentChainConfig(process.argv);
+const chainConfig = getCurrentChainConfig(argv);
 const { chainName, scan_api_key, scan_api_domain } = chainConfig;
 
 if (!scan_api_key) {
-  console.log(`Please set scan_api_key for chain '${chainName}' in ~/.block-explorer-utils/config.json`);
+  console.error(chalk.red(`Please set scan_api_key for chain '${chainName}' in ~/.block-explorer-utils/config.json`));
   exit(1);
 }
 
 if (!scan_api_domain) {
-  console.log(`Please set scan_api_domain for chain '${chainName}' in ~/.block-explorer-utils/config.json`);
+  console.error(chalk.red(`Please set scan_api_domain for chain '${chainName}' in ~/.block-explorer-utils/config.json`));
   exit(1);
 }
 
-// Clean arguments (remove --chain and its value)
-const cleanedArgs = cleanArgs(process.argv);
+// Get positional arguments
+const address = argv._[0];
 
-if (cleanedArgs.length < 3) {
-  console.log(`Usage: ${path.basename(cleanedArgs[1])} [--chain <chain-name>] <address>`);
+if (!address) {
+  console.error(chalk.red('Missing required address argument'));
+  yargs.showHelp();
   exit(1);
 }
-
-console.log(`Using chain: ${chainName}`);
-const address = cleanedArgs[2];
 
 const mkSourceCodeUrl = (address) => {
   return `https://${scan_api_domain}/api?module=contract&action=getsourcecode&address=${address}&apikey=${scan_api_key}`
