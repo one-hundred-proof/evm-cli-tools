@@ -14,7 +14,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Setup command line arguments with yargs
-const argv = setupYargs(yargs(hideBin(process.argv)), 
+const yargsInstance = setupYargs(yargs(hideBin(process.argv)), 
   `${chalk.bold('Usage:')} $0 [options] <address>`)
   .positional('address', {
     describe: 'Contract address to get source code for',
@@ -22,8 +22,9 @@ const argv = setupYargs(yargs(hideBin(process.argv)),
     demandOption: true
   })
   .example('$0 0x1234...', 'Get source code for contract 0x1234...')
-  .example('$0 --chain polygon 0x1234...', 'Get source code for contract on Polygon')
-  .argv;
+  .example('$0 --chain polygon 0x1234...', 'Get source code for contract on Polygon');
+
+const argv = yargsInstance.argv;
 
 // Get chain configuration
 const chainConfig = getCurrentChainConfig(argv);
@@ -44,7 +45,7 @@ const address = argv._[0];
 
 if (!address) {
   console.error(chalk.red('Missing required address argument'));
-  yargs.showHelp();
+  yargsInstance.showHelp();
   exit(1);
 }
 
