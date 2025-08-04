@@ -7,8 +7,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Path to the config directory and file
-const CONFIG_DIR = path.join(os.homedir(), '.block-explorer-utils');
-const CONFIG_PATH = path.join(CONFIG_DIR, 'config.json');
+export const CONFIG_DIR = path.join(os.homedir(), '.block-explorer-utils');
+export const CONFIG_PATH = path.join(CONFIG_DIR, 'config.json');
+export const CONFIG_PATH_DISPLAY = `~/.block-explorer-utils/config.json`;
 const EXAMPLE_CONFIG_PATH = path.join(__dirname, 'config.json.example');
 
 // Read the config file
@@ -21,7 +22,7 @@ export function readConfig() {
     
     // Check if config file exists, if not create it from example
     if (!fs.existsSync(CONFIG_PATH)) {
-      console.error(`Config file not found at ${CONFIG_PATH}`);
+      console.error(`Config file not found at ${CONFIG_PATH_DISPLAY}`);
       console.error('Creating example config file. Please edit it with your API keys.');
       
       // Copy example config if it exists
