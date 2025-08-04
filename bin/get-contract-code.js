@@ -14,15 +14,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Setup command line arguments with yargs
-const yargsInstance = setupYargs(yargs(hideBin(process.argv)), 
+const yargsInstance = setupYargs(yargs(hideBin(process.argv)),
   `${chalk.bold('Usage:')} $0 [options] <address>`)
   .positional('address', {
     describe: chalk.cyan('Contract address to get source code for'),
     type: 'string',
     demandOption: true
   })
-  .example('$0 0x1234...', `${chalk.green('Get source code for contract 0x1234...')}`)
+  .example(`${chalk.whiteBright('$0 0x1234...')}`, `${chalk.green('Get source code for contract 0x1234...')}`)
   .example('$0 --chain polygon 0x1234...', `${chalk.green('Get source code for contract on Polygon')}`);
+
 
 const argv = yargsInstance.argv;
 
