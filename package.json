@@ -1,6 +1,6 @@
 {
   "name": "block-explorer-utils",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A collection of utilities to use with the block explorer APIs",
   "type": "module",
   "bin": {
