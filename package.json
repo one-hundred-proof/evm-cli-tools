@@ -4,14 +4,14 @@
   "description": "A collection of utilities to use with the block explorer APIs",
   "type": "module",
   "bin": {
-    "keccak256": "./keccak256.js",
-    "evm-to-checksum-address": "./evm-to-checksum-address.js",
-    "diff-contract-code": "./diff-contract-code.js",
-    "evm-get-storage": "./evm-get-storage",
-    "evm-get-logs": "./evm-get-logs.js",
-    "evm-get-logs-by-topic": "./evm-get-logs-by-topic.js",
-    "evm-pretty": "./evm-pretty",
-    "get-contract-code": "./get-contract-code"
+    "keccak256": "./bin/keccak256.js",
+    "evm-to-checksum-address": "./bin/evm-to-checksum-address.js",
+    "diff-contract-code": "./bin/diff-contract-code.js",
+    "evm-get-storage": "./bin/evm-get-storage.js",
+    "evm-get-logs": "./bin/evm-get-logs.js",
+    "evm-get-logs-by-topic": "./bin/evm-get-logs-by-topic.js",
+    "evm-pretty": "./bin/evm-pretty.js",
+    "get-contract-code": "./bin/get-contract-code.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
