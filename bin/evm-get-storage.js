@@ -30,8 +30,8 @@ const yargsInstance = setupYargs(yargs(hideBin(process.argv)),
     type: 'string',
     default: 'latest'
   })
-  .example('$0 0x1234... 0', `${chalk.green('Get storage at slot 0')}`)
-  .example('$0 --chain polygon 0x1234... 0x1 1000000', `${chalk.green('Get storage at slot 0x1 at block 1000000 on Polygon')}`);
+  .example(chalk.bold('$0 0x1234... 0'), `${chalk.green('Get storage at slot 0')}`)
+  .example(chalk.bold('$0 --chain polygon 0x1234... 0x1 1000000'), `${chalk.green('Get storage at slot 0x1 at block 1000000 on Polygon')}`);
 
 const argv = yargsInstance.argv;
 

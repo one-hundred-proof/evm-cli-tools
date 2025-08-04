@@ -14,8 +14,8 @@ const argv = yargs(hideBin(process.argv))
     type: 'string',
     demandOption: true
   })
-  .example('$0 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', `${chalk.green('Convert address to checksum format')}`)
-  .example('$0 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 0x70997970c51812dc3a010c7d01b50e0d17dc79c8', `${chalk.green('Convert multiple addresses')}`)
+  .example(chalk.bold('$0 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266'), `${chalk.green('Convert address to checksum format')}`)
+  .example(chalk.bold('$0 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 0x70997970c51812dc3a010c7d01b50e0d17dc79c8'), `${chalk.green('Convert multiple addresses')}`)
   .help()
   .alias('help', 'h')
   .parserConfiguration({

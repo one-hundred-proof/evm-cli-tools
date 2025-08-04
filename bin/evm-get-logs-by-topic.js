@@ -40,8 +40,8 @@ const argv = setupYargs(yargs(hideBin(process.argv)),
     type: 'boolean',
     default: true
   })
-  .example('$0 0x1234... 0xabcd...', `${chalk.green('Get logs with topic 0xabcd... for contract 0x1234...')}`)
-  .example('$0 --chain polygon 0x1234... 0xabcd... 1000000', `${chalk.green('Get logs from block 1000000 on Polygon')}`)
+  .example(chalk.bold('$0 0x1234... 0xabcd...'), `${chalk.green('Get logs with topic 0xabcd... for contract 0x1234...')}`)
+  .example(chalk.bold('$0 --chain polygon 0x1234... 0xabcd... 1000000'), `${chalk.green('Get logs from block 1000000 on Polygon')}`)
   .argv;
 
 // Get chain configuration

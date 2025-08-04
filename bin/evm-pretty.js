@@ -34,9 +34,9 @@ const argv = yargs(hideBin(process.argv))
         type: 'number',
         default: 18
     })
-    .example('$0 1000000000000000000', `${chalk.green('Format 1 ETH (18 decimals)')}`)
-    .example('$0 1000000 6', `${chalk.green('Format 1 USDC (6 decimals)')}`)
-    .example('$0 0xde0b6b3a7640000', `${chalk.green('Format hex value (1 ETH)')}`)
+    .example(chalk.bold('$0 1000000000000000000'), `${chalk.green('Format 1 ETH (18 decimals)')}`)
+    .example(chalk.bold('$0 1000000 6'), `${chalk.green('Format 1 USDC (6 decimals)')}`)
+    .example(chalk.bold('$0 0xde0b6b3a7640000'), `${chalk.green('Format hex value (1 ETH)')}`)
     .help()
     .alias('help', 'h')
     .parserConfiguration({
