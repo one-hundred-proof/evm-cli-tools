@@ -42,15 +42,15 @@ fi
 jq --arg chain "$CHAIN" '.["current-chain"] = $chain' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
 
 # Get chain-specific configuration
-EVMSCAN_API_KEY=$(jq -r ".chains.\"$CHAIN\".scan_api_key" "$CONFIG_FILE")
-EVMSCAN_API_DOMAIN=$(jq -r ".chains.\"$CHAIN\".scan_api_domain" "$CONFIG_FILE")
+SCAN_API_KEY=$(jq -r ".chains.\"$CHAIN\".scan_api_key" "$CONFIG_FILE")
+SCAN_API_DOMAIN=$(jq -r ".chains.\"$CHAIN\".scan_api_domain" "$CONFIG_FILE")
 
-if [ "$EVMSCAN_API_KEY" = "" ] || [ "$EVMSCAN_API_KEY" = "null" ]; then
+if [ "$SCAN_API_KEY" = "" ] || [ "$SCAN_API_KEY" = "null" ]; then
   echo "Please set scan_api_key for chain '$CHAIN' in $CONFIG_FILE"
   exit 1
 fi
 
-if [ "$EVMSCAN_API_DOMAIN" = "" ] || [ "$EVMSCAN_API_DOMAIN" = "null" ]; then
+if [ "$SCAN_API_DOMAIN" = "" ] || [ "$SCAN_API_DOMAIN" = "null" ]; then
   echo "Please set scan_api_domain for chain '$CHAIN' in $CONFIG_FILE"
   exit 1
 fi
@@ -81,4 +81,4 @@ FROM="${ARGS[2]:-1}"
 TO="${ARGS[3]:-latest}"
 
 echo "Using chain: $CHAIN"
-curl "https://$EVMSCAN_API_DOMAIN/api?module=logs&action=getLogs&address=$ADDRESS&fromBlock=$FROM&toBlock=$TO&apikey=$EVMSCAN_API_KEY&topic0=$TOPIC" | jq
+curl "https://$SCAN_API_DOMAIN/api?module=logs&action=getLogs&address=$ADDRESS&fromBlock=$FROM&toBlock=$TO&apikey=$SCAN_API_KEY&topic0=$TOPIC" | jq

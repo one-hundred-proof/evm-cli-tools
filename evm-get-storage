@@ -42,18 +42,16 @@ fi
 jq --arg chain "$CHAIN" '.["current-chain"] = $chain' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
 
 # Get chain-specific configuration
-INFURA_API_KEY=$(jq -r ".chains.\"$CHAIN\".api_key" "$CONFIG_FILE")
-INFURA_PREFIX=$(jq -r ".chains.\"$CHAIN\".prefix" "$CONFIG_FILE")
+API_KEY=$(jq -r ".chains.\"$CHAIN\".api_key" "$CONFIG_FILE")
+PREFIX=$(jq -r ".chains.\"$CHAIN\".prefix" "$CONFIG_FILE")
 
-if [ "$INFURA_API_KEY" = "" ] || [ "$INFURA_API_KEY" = "null" ]; then
+if [ "$API_KEY" = "" ] || [ "$API_KEY" = "null" ]; then
   echo "Please set api_key for chain '$CHAIN' in $CONFIG_FILE"
   exit 1
 fi
 
-if [ "$INFURA_PREFIX" = "" ] || [ "$INFURA_PREFIX" = "null" ]; then
+if [ "$PREFIX" = "" ] || [ "$PREFIX" = "null" ]; then
   export PREFIX="https://mainnet.infura.io/v3"
-else
-  export PREFIX="$INFURA_PREFIX"
 fi
 
 # Filter out --chain argument for usage check
@@ -82,7 +80,7 @@ BLOCK="${ARGS[2]:-latest}"
 
 echo "Using chain: $CHAIN"
 echo -n "$SLOT: "
-curl -s $PREFIX/$INFURA_API_KEY \
+curl -s $PREFIX/$API_KEY \
     -X POST \
     -H "Content-Type: application/json" \
     -d "{\"jsonrpc\":\"2.0\",\"method\":\"eth_getStorageAt\",\"params\": [\"$CONTRACT\", \"$SLOT\", \"$BLOCK\"],\"id\":1}" | jq '.result'
