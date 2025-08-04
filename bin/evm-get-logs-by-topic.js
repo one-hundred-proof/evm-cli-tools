@@ -4,46 +4,90 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fetch from 'node-fetch';
-import { getCurrentChainConfig, cleanArgs } from '../lib/config-utils.js';
+import chalk from 'chalk';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import { getCurrentChainConfig, setupYargs } from '../lib/config-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Setup command line arguments with yargs
+const argv = setupYargs(yargs(hideBin(process.argv)), 
+  `${chalk.bold('Usage:')} $0 [options] <address> <topic> [from-block] [to-block]`)
+  .positional('address', {
+    describe: 'Contract address to get logs for',
+    type: 'string',
+    demandOption: true
+  })
+  .positional('topic', {
+    describe: 'Event topic hash (keccak256 of the event signature)',
+    type: 'string',
+    demandOption: true
+  })
+  .positional('from-block', {
+    describe: 'Starting block number',
+    type: 'string',
+    default: '1'
+  })
+  .positional('to-block', {
+    describe: 'Ending block number or "latest"',
+    type: 'string',
+    default: 'latest'
+  })
+  .option('pretty', {
+    describe: 'Pretty print the output',
+    type: 'boolean',
+    default: true
+  })
+  .example('$0 0x1234... 0xabcd...', 'Get logs with topic 0xabcd... for contract 0x1234...')
+  .example('$0 --chain polygon 0x1234... 0xabcd... 1000000', 'Get logs from block 1000000 on Polygon')
+  .argv;
+
 // Get chain configuration
-const chainConfig = getCurrentChainConfig(process.argv);
+const chainConfig = getCurrentChainConfig(argv);
 const { chainName, scan_api_key, scan_api_domain } = chainConfig;
 
 if (!scan_api_key) {
-  console.log(`Please set scan_api_key for chain '${chainName}' in ~/.block-explorer-utils/config.json`);
+  console.error(chalk.red(`Please set scan_api_key for chain '${chainName}' in ~/.block-explorer-utils/config.json`));
   process.exit(1);
 }
 
 if (!scan_api_domain) {
-  console.log(`Please set scan_api_domain for chain '${chainName}' in ~/.block-explorer-utils/config.json`);
+  console.error(chalk.red(`Please set scan_api_domain for chain '${chainName}' in ~/.block-explorer-utils/config.json`));
   process.exit(1);
 }
 
-// Clean arguments (remove --chain and its value)
-const cleanedArgs = cleanArgs(process.argv);
+// Get positional arguments
+const address = argv._[0];
+const topic = argv._[1];
+const fromBlock = argv._[2] || '1';
+const toBlock = argv._[3] || 'latest';
 
-if (cleanedArgs.length < 4) {
-  console.log(`Usage: ${path.basename(cleanedArgs[1])} [--chain <chain-name>] <address> <topic> [<fromBlock>] [<toBlock>]`);
+if (!address || !topic) {
+  console.error(chalk.red('Missing required arguments'));
+  yargs.showHelp();
   process.exit(1);
 }
-
-const address = cleanedArgs[2];
-const topic = cleanedArgs[3];
-const fromBlock = cleanedArgs.length > 4 ? cleanedArgs[4] : '1';
-const toBlock = cleanedArgs.length > 5 ? cleanedArgs[5] : 'latest';
-
-console.log(`Using chain: ${chainName}`);
 
 const url = `https://${scan_api_domain}/api?module=logs&action=getLogs&address=${address}&fromBlock=${fromBlock}&toBlock=${toBlock}&apikey=${scan_api_key}&topic0=${topic}`;
 
 fetch(url)
   .then(response => response.json())
-  .then(data => console.log(JSON.stringify(data, null, 2)))
+  .then(data => {
+    if (data.status === '0') {
+      console.error(chalk.red(`Error: ${data.message || 'Unknown error'}`));
+      process.exit(1);
+    }
+    
+    if (argv.pretty) {
+      console.log(chalk.green(`Found ${data.result.length} logs with topic ${chalk.cyan(topic)}:`));
+      console.log(JSON.stringify(data.result, null, 2));
+    } else {
+      console.log(JSON.stringify(data.result));
+    }
+  })
   .catch(error => {
-    console.error('Error fetching logs:', error);
+    console.error(chalk.red('Error fetching logs:'), error);
     process.exit(1);
   });
