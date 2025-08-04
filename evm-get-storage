@@ -1,33 +1,71 @@
 #!/bin/bash
 
 export THIS_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-set -o allexport
-source $THIS_DIR/.env
-set +o allexport
 
+# Parse command line arguments for --chain
+CHAIN="ethereum"
+for ((i=1; i<=$#; i++)); do
+  if [[ "${!i}" == "--chain" && $i -lt $# ]]; then
+    j=$((i+1))
+    CHAIN="${!j}"
+  fi
+done
 
-if [ "$INFURA_API_KEY" = "" ]; then
-  echo "Please set INFURA_API_KEY in the environment"
-  exit 1;
+# Read config file
+CONFIG_FILE="$THIS_DIR/config.json"
+if [ ! -f "$CONFIG_FILE" ]; then
+  echo "Config file not found. Please copy config.json.example to config.json and fill in your API keys."
+  exit 1
 fi
 
+# Get current chain from config if not specified in command line
+if [[ "$*" != *"--chain"* ]]; then
+  CHAIN=$(jq -r '."current-chain" // "ethereum"' "$CONFIG_FILE")
+fi
 
-if [ "$INFURA_PREFIX" = "" ]; then
+# Update current-chain in config
+jq --arg chain "$CHAIN" '.["current-chain"] = $chain' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+
+# Get chain-specific configuration
+INFURA_API_KEY=$(jq -r ".chains.\"$CHAIN\".infura_api_key" "$CONFIG_FILE")
+INFURA_PREFIX=$(jq -r ".chains.\"$CHAIN\".infura_prefix" "$CONFIG_FILE")
+
+if [ "$INFURA_API_KEY" = "" ] || [ "$INFURA_API_KEY" = "null" ]; then
+  echo "Please set infura_api_key for chain '$CHAIN' in config.json"
+  exit 1
+fi
+
+if [ "$INFURA_PREFIX" = "" ] || [ "$INFURA_PREFIX" = "null" ]; then
   export PREFIX="https://mainnet.infura.io/v3"
 else
   export PREFIX="$INFURA_PREFIX"
 fi
 
-if [ $# -lt 2 ]; then
-    echo "Usage: $(basename $0) <contract address> <storage slot> [<block>]"
+# Filter out --chain argument for usage check
+ARGS=()
+SKIP_NEXT=false
+for arg in "$@"; do
+  if $SKIP_NEXT; then
+    SKIP_NEXT=false
+    continue
+  fi
+  if [ "$arg" = "--chain" ]; then
+    SKIP_NEXT=true
+    continue
+  fi
+  ARGS+=("$arg")
+done
+
+if [ ${#ARGS[@]} -lt 2 ]; then
+    echo "Usage: $(basename $0) [--chain <chain-name>] <contract address> <storage slot> [<block>]"
     exit 1
 fi
 
-CONTRACT=$1
-SLOT=$2
+CONTRACT=${ARGS[0]}
+SLOT=${ARGS[1]}
+BLOCK="${ARGS[2]:-latest}"
 
-BLOCK="${3:-latest}"
-
+echo "Using chain: $CHAIN"
 echo -n "$SLOT: "
 curl -s $PREFIX/$INFURA_API_KEY \
     -X POST \

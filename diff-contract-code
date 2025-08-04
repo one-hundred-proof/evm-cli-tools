@@ -1,46 +1,50 @@
 #!/usr/bin/env node
 
-import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
 import { exit } from 'process';
 import { spawnSync } from 'child_process';
-
 import { fileURLToPath } from 'url';
+import { getCurrentChainConfig, cleanArgs } from './config-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.join(__dirname, '.env') });
-const { EVMSCAN_API_KEY, EVMSCAN_API_DOMAIN } = process.env;
+// Get chain configuration
+const chainConfig = getCurrentChainConfig(process.argv);
+const { chainName, evmscan_api_key, evmscan_api_domain } = chainConfig;
 
-if (!EVMSCAN_API_KEY) {
-  console.log("Please export EVMSCAN_API_KEY or put it in .env");
+if (!evmscan_api_key) {
+  console.log(`Please set evmscan_api_key for chain '${chainName}' in config.json`);
   exit(1);
 }
 
-let evmscanApiDomain = "$EVMSCAN_API_DOMAIN";
-//
-if (EVMSCAN_API_DOMAIN) {
-  evmscanApiDomain = EVMSCAN_API_DOMAIN;
-}
-
-if (process.argv.length < 4) {
-  console.log(`Usage: ${path.basename(process.argv[1])} <address1> <address2> [<isWordLevelDiff = true> ]`);
+if (!evmscan_api_domain) {
+  console.log(`Please set evmscan_api_domain for chain '${chainName}' in config.json`);
   exit(1);
 }
-const address1 = process.argv[2];
-const address2 = process.argv[3];
+
+// Clean arguments (remove --chain and its value)
+const cleanedArgs = cleanArgs(process.argv);
+
+if (cleanedArgs.length < 4) {
+  console.log(`Usage: ${path.basename(cleanedArgs[1])} [--chain <chain-name>] <address1> <address2> [<isWordLevelDiff = true> ]`);
+  exit(1);
+}
+
+console.log(`Using chain: ${chainName}`);
+const address1 = cleanedArgs[2];
+const address2 = cleanedArgs[3];
 
 let wordLevelDiff = true;
-const arg3 = process.argv[4]
-if (process.argv.length >= 5 && arg3[0] == 'f') {
+const arg3 = cleanedArgs[4]
+if (cleanedArgs.length >= 5 && arg3[0] == 'f') {
   wordLevelDiff = false;
 }
 
 const mkSourceCodeUrl = (address) => {
-  return `https://${evmscanApiDomain}/api?module=contract&action=getsourcecode&address=${address}&apikey=${EVMSCAN_API_KEY}`
+  return `https://${evmscan_api_domain}/api?module=contract&action=getsourcecode&address=${address}&apikey=${evmscan_api_key}`
 }
 
 const mkDirAndWriteFile = (dir, fileName, content) => {

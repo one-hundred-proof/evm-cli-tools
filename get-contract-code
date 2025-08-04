@@ -1,43 +1,42 @@
 #!/usr/bin/env node
 
-import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
 import { exit } from 'process';
 import { fileURLToPath } from 'url';
+import { getCurrentChainConfig, cleanArgs } from './config-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.join(__dirname, '.env') });
-const { EVMSCAN_API_KEY, EVMSCAN_API_DOMAIN } = process.env;
+// Get chain configuration
+const chainConfig = getCurrentChainConfig(process.argv);
+const { chainName, evmscan_api_key, evmscan_api_domain } = chainConfig;
 
-if (!EVMSCAN_API_KEY) {
-  console.log("Please export EVMSCAN_API_KEY or put it in .env");
+if (!evmscan_api_key) {
+  console.log(`Please set evmscan_api_key for chain '${chainName}' in config.json`);
   exit(1);
 }
 
-if (!EVMSCAN_API_DOMAIN) {
-  console.log("Please export EVMSCAN_API_DOMAIN or put it in .env");
+if (!evmscan_api_domain) {
+  console.log(`Please set evmscan_api_domain for chain '${chainName}' in config.json`);
   exit(1);
 }
 
+// Clean arguments (remove --chain and its value)
+const cleanedArgs = cleanArgs(process.argv);
 
-let evmscanApiDomain = "$EVMSCAN_API_DOMAIN"; // default to etherscan.io
-//
-if (EVMSCAN_API_DOMAIN) {
-  evmscanApiDomain = EVMSCAN_API_DOMAIN;
-}
-
-if (process.argv.length < 3) {
-  console.log(`Usage: ${path.basename(process.argv[1])} <address>`);
+if (cleanedArgs.length < 3) {
+  console.log(`Usage: ${path.basename(cleanedArgs[1])} [--chain <chain-name>] <address>`);
   exit(1);
 }
-const address = process.argv[2];
+
+console.log(`Using chain: ${chainName}`);
+const address = cleanedArgs[2];
 
 const mkSourceCodeUrl = (address) => {
-  return `https://${evmscanApiDomain}/api?module=contract&action=getsourcecode&address=${address}&apikey=${EVMSCAN_API_KEY}`
+  return `https://${evmscan_api_domain}/api?module=contract&action=getsourcecode&address=${address}&apikey=${evmscan_api_key}`
 }
 
 const mkDirAndWriteFile = (dir, fileName, content) => {

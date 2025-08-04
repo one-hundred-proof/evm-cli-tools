@@ -1,14 +1,68 @@
-export THIS_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
-set -o allexport
-source $THIS_DIR/.env
-set +o allexport
+#!/bin/bash
 
-if [ $# -lt 1 ]; then
-  echo "Usage: $(basename $0) <address> [<fromBlock>] [<toBlock>]"
+export THIS_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+
+# Parse command line arguments for --chain
+CHAIN="ethereum"
+for ((i=1; i<=$#; i++)); do
+  if [[ "${!i}" == "--chain" && $i -lt $# ]]; then
+    j=$((i+1))
+    CHAIN="${!j}"
+  fi
+done
+
+# Read config file
+CONFIG_FILE="$THIS_DIR/config.json"
+if [ ! -f "$CONFIG_FILE" ]; then
+  echo "Config file not found. Please copy config.json.example to config.json and fill in your API keys."
   exit 1
 fi
 
-FROM="${2:-1}"
-TO="${3:-latest}"
+# Get current chain from config if not specified in command line
+if [[ "$*" != *"--chain"* ]]; then
+  CHAIN=$(jq -r '."current-chain" // "ethereum"' "$CONFIG_FILE")
+fi
 
-curl "https://$EVMSCAN_API_DOMAIN/api?module=logs&action=getLogs&address=$1&fromBlock=$FROM&toBlock=$TO&apikey=$EVMSCAN_API_KEY" | jq
+# Update current-chain in config
+jq --arg chain "$CHAIN" '.["current-chain"] = $chain' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
+
+# Get chain-specific configuration
+EVMSCAN_API_KEY=$(jq -r ".chains.\"$CHAIN\".evmscan_api_key" "$CONFIG_FILE")
+EVMSCAN_API_DOMAIN=$(jq -r ".chains.\"$CHAIN\".evmscan_api_domain" "$CONFIG_FILE")
+
+if [ "$EVMSCAN_API_KEY" = "" ] || [ "$EVMSCAN_API_KEY" = "null" ]; then
+  echo "Please set evmscan_api_key for chain '$CHAIN' in config.json"
+  exit 1
+fi
+
+if [ "$EVMSCAN_API_DOMAIN" = "" ] || [ "$EVMSCAN_API_DOMAIN" = "null" ]; then
+  echo "Please set evmscan_api_domain for chain '$CHAIN' in config.json"
+  exit 1
+fi
+
+# Filter out --chain argument for usage check
+ARGS=()
+SKIP_NEXT=false
+for arg in "$@"; do
+  if $SKIP_NEXT; then
+    SKIP_NEXT=false
+    continue
+  fi
+  if [ "$arg" = "--chain" ]; then
+    SKIP_NEXT=true
+    continue
+  fi
+  ARGS+=("$arg")
+done
+
+if [ ${#ARGS[@]} -lt 1 ]; then
+  echo "Usage: $(basename $0) [--chain <chain-name>] <address> [<fromBlock>] [<toBlock>]"
+  exit 1
+fi
+
+ADDRESS=${ARGS[0]}
+FROM="${ARGS[1]:-1}"
+TO="${ARGS[2]:-latest}"
+
+echo "Using chain: $CHAIN"
+curl "https://$EVMSCAN_API_DOMAIN/api?module=logs&action=getLogs&address=$ADDRESS&fromBlock=$FROM&toBlock=$TO&apikey=$EVMSCAN_API_KEY" | jq
