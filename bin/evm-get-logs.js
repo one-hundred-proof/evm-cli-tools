@@ -1,19 +1,13 @@
 #!/usr/bin/env node
 
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import fetch from 'node-fetch';
 import chalk from 'chalk';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY } from '../lib/config-utils.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 // Setup command line arguments with yargs
-const argv = setupYargs(yargs(hideBin(process.argv)), 
+const yargsInstance = setupYargs(yargs(hideBin(process.argv)),
   `${chalk.bold('Usage:')} $0 [options] <address> [from-block] [to-block]`)
   .positional('address', {
     describe: chalk.cyan('Contract address to get logs for'),
@@ -37,9 +31,13 @@ const argv = setupYargs(yargs(hideBin(process.argv)),
   })
   .example('$0 0x1234...', `${chalk.green('Get all logs for contract 0x1234...')}`)
   .example('$0 --chain polygon 0x1234... 1000000', `${chalk.green('Get logs from block 1000000 on Polygon')}`)
-  .argv;
 
-// Get chain configuration
+
+const argv = yargsInstance.argv;
+
+
+
+  // Get chain configuration
 const chainConfig = getCurrentChainConfig(argv);
 const { chainName, scan_api_key, scan_api_domain } = chainConfig;
 
@@ -60,7 +58,7 @@ const toBlock = argv._[2] || 'latest';
 
 if (!address) {
   console.error(chalk.red('Missing required address argument'));
-  yargs.showHelp();
+  yargsInstance.showHelp();
   process.exit(1);
 }
 
@@ -73,7 +71,7 @@ fetch(url)
       console.error(chalk.red(`Error: ${data.message || 'Unknown error'}`));
       process.exit(1);
     }
-    
+
     if (argv.pretty) {
       console.log(chalk.green(`Found ${data.result.length} logs:`));
       console.log(JSON.stringify(data.result, null, 2));
