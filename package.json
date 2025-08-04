@@ -28,10 +28,10 @@
   },
   "homepage": "https://github.com/one-hundred-proof/block-explorer-utils#readme",
   "dependencies": {
-    "chalk": "^5.3.0",
-    "node-fetch": "^3.3.0",
-    "web3": "^1.8.2",
-    "yargs": "^17.7.2"
+    "chalk":      "5.5.0",
+    "node-fetch": "3.3.2",
+    "web3":       "4.16.0",
+    "yargs":      "18.0.0"
   },
   "engines": {
     "node": ">=14.16"
