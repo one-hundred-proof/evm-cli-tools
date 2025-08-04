@@ -15,7 +15,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "echo \"Configuration file will be created at ~/.block-explorer-utils/config.json when you first run any command\""
+    "postinstall": "node -e \"const {CONFIG_PATH_DISPLAY} = require('./lib/config-utils.js'); console.log(`Configuration file will be created at ${CONFIG_PATH_DISPLAY} when you first run any command`);\""
   },
   "repository": {
     "type": "git",
