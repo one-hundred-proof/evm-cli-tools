@@ -6,40 +6,64 @@ import path from 'path';
 import { exit } from 'process';
 import { spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
-import { getCurrentChainConfig, cleanArgs } from '../lib/config-utils.js';
+import chalk from 'chalk';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import { getCurrentChainConfig, setupYargs } from '../lib/config-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Setup command line arguments with yargs
+const yargsInstance = setupYargs(yargs(hideBin(process.argv)), 
+  `${chalk.bold('Usage:')} $0 [options] <address1> <address2> [word-level-diff]`)
+  .positional('address1', {
+    describe: 'First contract address to compare',
+    type: 'string',
+    demandOption: true
+  })
+  .positional('address2', {
+    describe: 'Second contract address to compare',
+    type: 'string',
+    demandOption: true
+  })
+  .positional('word-level-diff', {
+    describe: 'Use word-level diff (true/false)',
+    type: 'string',
+    default: 'true'
+  })
+  .example('$0 0x1234... 0x5678...', 'Compare contracts with word-level diff')
+  .example('$0 --chain polygon 0x1234... 0x5678... false', 'Compare contracts on Polygon with line-level diff');
+
+const argv = yargsInstance.argv;
+
 // Get chain configuration
-const chainConfig = getCurrentChainConfig(process.argv);
+const chainConfig = getCurrentChainConfig(argv);
 const { chainName, scan_api_key, scan_api_domain } = chainConfig;
 
 if (!scan_api_key) {
-  console.log(`Please set scan_api_key for chain '${chainName}' in ~/.block-explorer-utils/config.json`);
+  console.error(chalk.red(`Please set scan_api_key for chain '${chainName}' in ~/.block-explorer-utils/config.json`));
   exit(1);
 }
 
 if (!scan_api_domain) {
-  console.log(`Please set scan_api_domain for chain '${chainName}' in ~/.block-explorer-utils/config.json`);
+  console.error(chalk.red(`Please set scan_api_domain for chain '${chainName}' in ~/.block-explorer-utils/config.json`));
   exit(1);
 }
 
-// Clean arguments (remove --chain and its value)
-const cleanedArgs = cleanArgs(process.argv);
+// Get positional arguments
+const address1 = argv._[0];
+const address2 = argv._[1];
+const wordLevelDiffArg = argv._[2];
 
-if (cleanedArgs.length < 4) {
-  console.log(`Usage: ${path.basename(cleanedArgs[1])} [--chain <chain-name>] <address1> <address2> [<isWordLevelDiff = true> ]`);
+if (!address1 || !address2) {
+  console.error(chalk.red('Missing required address arguments'));
+  yargsInstance.showHelp();
   exit(1);
 }
-
-console.log(`Using chain: ${chainName}`);
-const address1 = cleanedArgs[2];
-const address2 = cleanedArgs[3];
 
 let wordLevelDiff = true;
-const arg3 = cleanedArgs[4]
-if (cleanedArgs.length >= 5 && arg3[0] == 'f') {
+if (wordLevelDiffArg && wordLevelDiffArg.toString().toLowerCase()[0] === 'f') {
   wordLevelDiff = false;
 }
 
@@ -119,8 +143,8 @@ const getFilesRecursively = (dir) => {
 const files1 = getFilesRecursively(r1.dir);
 const files2 = getFilesRecursively(r2.dir);
 
-console.log(`Address 1: ${address1}`);
-console.log(`Address 2: ${address2}`);
+console.log(chalk.blue(`Address 1: ${chalk.bold(address1)}`));
+console.log(chalk.blue(`Address 2: ${chalk.bold(address2)}`));
 
 if (r1.areMultipleFiles && r2.areMultipleFiles) {
   console.log(`\n=== Files at first address but not second ===`);

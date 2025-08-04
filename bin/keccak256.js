@@ -1,15 +1,31 @@
 #!/usr/bin/env node
 
 import web3 from "web3";
+import chalk from 'chalk';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
-if (process.argv.length < 3) {
-  console.log(`Usage: ${process.argv[1]} <address>...` );
+const argv = yargs(hideBin(process.argv))
+  .usage(`${chalk.bold('Usage:')} $0 [options] <string>...`)
+  .positional('string', {
+    describe: 'String(s) to hash with keccak256',
+    type: 'string',
+    demandOption: true
+  })
+  .example('$0 "Hello World"', 'Calculate keccak256 hash of "Hello World"')
+  .example('$0 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', 'Calculate keccak256 hash of an address')
+  .example('$0 "transfer(address,uint256)"', 'Calculate function signature')
+  .help()
+  .alias('help', 'h')
+  .argv;
+
+if (argv._.length === 0) {
+  console.error(chalk.red('Missing required string argument'));
+  yargs.showHelp();
   process.exit(1);
 }
 
-
-for (let i=0; i < process.argv.length - 2; i++) {
-  let address  = process.argv[i+2];
-  console.log(web3.utils.keccak256(address));
+for (const str of argv._) {
+  console.log(web3.utils.keccak256(str));
 }
 

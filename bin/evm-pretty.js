@@ -1,9 +1,13 @@
 #!/usr/bin/env node
 
+import chalk from 'chalk';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+
 function formatLargeNumber(num, decimals = 18) {
     let numStr = BigInt(num).toString(); // Convert number to string
 
-   // Ensure the number has at least 'decimals' digits for decimal separation
+    // Ensure the number has at least 'decimals' digits for decimal separation
     if (numStr.length <= decimals) {
         numStr = numStr.padStart(decimals, '0'); // Pad with leading zeros
         return "0_" + numStr;
@@ -17,13 +21,43 @@ function formatLargeNumber(num, decimals = 18) {
     return formattedLeft + "_" + rightPart;
 }
 
-// CLI support
+// CLI support with yargs
+const argv = yargs(hideBin(process.argv))
+    .usage(`${chalk.bold('Usage:')} $0 [options] <number> [decimals]`)
+    .positional('number', {
+        describe: 'Large number to format (can be in hex or decimal)',
+        type: 'string',
+        demandOption: true
+    })
+    .positional('decimals', {
+        describe: 'Number of decimal places',
+        type: 'number',
+        default: 18
+    })
+    .example('$0 1000000000000000000', 'Format 1 ETH (18 decimals)')
+    .example('$0 1000000 6', 'Format 1 USDC (6 decimals)')
+    .example('$0 0xde0b6b3a7640000', 'Format hex value (1 ETH)')
+    .help()
+    .alias('help', 'h')
+    .argv;
 
-    const args = process.argv.slice(2);
-    if (args.length < 1) {
-        console.error("Usage: node script.js <number> [decimals]");
-        process.exit(1);
-    }
-    const number = args[0];
-    const decimals = args.length > 1 ? parseInt(args[1], 10) : 18;
-    console.log(formatLargeNumber(number, decimals));
+if (argv._.length === 0) {
+    console.error(chalk.red('Missing required number argument'));
+    yargs.showHelp();
+    process.exit(1);
+}
+
+const number = argv._[0];
+const decimals = argv._[1] || 18;
+
+try {
+    // Handle hex input by converting to decimal
+    const parsedNumber = number.startsWith('0x') 
+        ? BigInt(number).toString() 
+        : number;
+    
+    console.log(formatLargeNumber(parsedNumber, decimals));
+} catch (error) {
+    console.error(chalk.red(`Error formatting number: ${error.message}`));
+    process.exit(1);
+}

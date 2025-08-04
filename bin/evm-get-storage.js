@@ -4,36 +4,60 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fetch from 'node-fetch';
-import { getCurrentChainConfig, cleanArgs } from '../lib/config-utils.js';
+import chalk from 'chalk';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+import { getCurrentChainConfig, setupYargs } from '../lib/config-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Setup command line arguments with yargs
+const yargsInstance = setupYargs(yargs(hideBin(process.argv)), 
+  `${chalk.bold('Usage:')} $0 [options] <contract-address> <storage-slot> [block]`)
+  .positional('contract-address', {
+    describe: 'Contract address to query storage from',
+    type: 'string',
+    demandOption: true
+  })
+  .positional('storage-slot', {
+    describe: 'Storage slot to query (hex or decimal)',
+    type: 'string',
+    demandOption: true
+  })
+  .positional('block', {
+    describe: 'Block number or "latest"',
+    type: 'string',
+    default: 'latest'
+  })
+  .example('$0 0x1234... 0', 'Get storage at slot 0')
+  .example('$0 --chain polygon 0x1234... 0x1 1000000', 'Get storage at slot 0x1 at block 1000000 on Polygon');
+
+const argv = yargsInstance.argv;
+
 // Get chain configuration
-const chainConfig = getCurrentChainConfig(process.argv);
+const chainConfig = getCurrentChainConfig(argv);
 const { chainName, api_key, prefix } = chainConfig;
 
 if (!api_key) {
-  console.log(`Please set api_key for chain '${chainName}' in ~/.block-explorer-utils/config.json`);
+  console.error(chalk.red(`Please set api_key for chain '${chainName}' in ~/.block-explorer-utils/config.json`));
   process.exit(1);
 }
 
 const rpcPrefix = prefix || "https://mainnet.infura.io/v3";
 
-// Clean arguments (remove --chain and its value)
-const cleanedArgs = cleanArgs(process.argv);
+// Get positional arguments
+const contract = argv._[0];
+const slot = argv._[1];
+const block = argv._[2] || 'latest';
 
-if (cleanedArgs.length < 4) {
-  console.log(`Usage: ${path.basename(cleanedArgs[1])} [--chain <chain-name>] <contract address> <storage slot> [<block>]`);
+if (!contract || slot === undefined) {
+  console.error(chalk.red('Missing required arguments'));
+  yargsInstance.showHelp();
   process.exit(1);
 }
 
-const contract = cleanedArgs[2];
-const slot = cleanedArgs[3];
-const block = cleanedArgs.length > 4 ? cleanedArgs[4] : 'latest';
-
-console.log(`Using chain: ${chainName}`);
-console.log(`${slot}: `);
+console.log(chalk.blue(`Storage at slot ${chalk.bold(slot)}:`));
 
 const url = `${rpcPrefix}/${api_key}`;
 const body = {
