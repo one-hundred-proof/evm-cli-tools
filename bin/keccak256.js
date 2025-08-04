@@ -12,9 +12,9 @@ const argv = yargs(hideBin(process.argv))
     type: 'string',
     demandOption: true
   })
-  .example('$0 "Hello World"', chalk.green('Calculate keccak256 hash of "Hello World"'))
-  .example('$0 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', chalk.green('Calculate keccak256 hash of an address'))
-  .example('$0 "transfer(address,uint256)"', chalk.green('Calculate function signature'))
+  .example('$0 "Hello World"', `${chalk.green('Calculate keccak256 hash of "Hello World"')}`)
+  .example('$0 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', `${chalk.green('Calculate keccak256 hash of an address')}`)
+  .example('$0 "transfer(address,uint256)"', `${chalk.green('Calculate function signature')}`)
   .help()
   .alias('help', 'h')
   .parserConfiguration({
