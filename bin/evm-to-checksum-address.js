@@ -10,14 +10,22 @@ import { hideBin } from 'yargs/helpers';
 const argv = yargs(hideBin(process.argv))
   .usage(`${chalk.bold('Usage:')} $0 [options] <address>...`)
   .positional('address', {
-    describe: 'Ethereum address(es) to convert to checksum format',
+    describe: chalk.cyan('Ethereum address(es) to convert to checksum format'),
     type: 'string',
     demandOption: true
   })
-  .example('$0 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', 'Convert address to checksum format')
-  .example('$0 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 0x70997970c51812dc3a010c7d01b50e0d17dc79c8', 'Convert multiple addresses')
+  .example('$0 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', chalk.green('Convert address to checksum format'))
+  .example('$0 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 0x70997970c51812dc3a010c7d01b50e0d17dc79c8', chalk.green('Convert multiple addresses'))
   .help()
   .alias('help', 'h')
+  .parserConfiguration({
+    'description-colors': true
+  })
+  .updateStrings({
+    'Options:': chalk.yellow.bold('Options:'),
+    'Examples:': chalk.green.bold('Examples:'),
+    'Positionals:': chalk.magenta.bold('Positionals:')
+  })
   .argv;
 
 if (argv._.length === 0) {

@@ -17,12 +17,12 @@ const __dirname = path.dirname(__filename);
 const yargsInstance = setupYargs(yargs(hideBin(process.argv)), 
   `${chalk.bold('Usage:')} $0 [options] <address>`)
   .positional('address', {
-    describe: 'Contract address to get source code for',
+    describe: chalk.cyan('Contract address to get source code for'),
     type: 'string',
     demandOption: true
   })
-  .example('$0 0x1234...', 'Get source code for contract 0x1234...')
-  .example('$0 --chain polygon 0x1234...', 'Get source code for contract on Polygon');
+  .example('$0 0x1234...', chalk.green('Get source code for contract 0x1234...'))
+  .example('$0 --chain polygon 0x1234...', chalk.green('Get source code for contract on Polygon'));
 
 const argv = yargsInstance.argv;
 

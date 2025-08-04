@@ -16,27 +16,27 @@ const __dirname = path.dirname(__filename);
 const argv = setupYargs(yargs(hideBin(process.argv)), 
   `${chalk.bold('Usage:')} $0 [options] <address> [from-block] [to-block]`)
   .positional('address', {
-    describe: 'Contract address to get logs for',
+    describe: chalk.cyan('Contract address to get logs for'),
     type: 'string',
     demandOption: true
   })
   .positional('from-block', {
-    describe: 'Starting block number',
+    describe: chalk.cyan('Starting block number'),
     type: 'string',
     default: '1'
   })
   .positional('to-block', {
-    describe: 'Ending block number or "latest"',
+    describe: chalk.cyan('Ending block number or "latest"'),
     type: 'string',
     default: 'latest'
   })
   .option('pretty', {
-    describe: 'Pretty print the output',
+    describe: chalk.cyan('Pretty print the output'),
     type: 'boolean',
     default: true
   })
-  .example('$0 0x1234...', 'Get all logs for contract 0x1234...')
-  .example('$0 --chain polygon 0x1234... 1000000', 'Get logs from block 1000000 on Polygon')
+  .example('$0 0x1234...', chalk.green('Get all logs for contract 0x1234...'))
+  .example('$0 --chain polygon 0x1234... 1000000', chalk.green('Get logs from block 1000000 on Polygon'))
   .argv;
 
 // Get chain configuration

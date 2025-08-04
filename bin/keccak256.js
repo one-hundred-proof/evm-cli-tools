@@ -8,15 +8,23 @@ import { hideBin } from 'yargs/helpers';
 const argv = yargs(hideBin(process.argv))
   .usage(`${chalk.bold('Usage:')} $0 [options] <string>...`)
   .positional('string', {
-    describe: 'String(s) to hash with keccak256',
+    describe: chalk.cyan('String(s) to hash with keccak256'),
     type: 'string',
     demandOption: true
   })
-  .example('$0 "Hello World"', 'Calculate keccak256 hash of "Hello World"')
-  .example('$0 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', 'Calculate keccak256 hash of an address')
-  .example('$0 "transfer(address,uint256)"', 'Calculate function signature')
+  .example('$0 "Hello World"', chalk.green('Calculate keccak256 hash of "Hello World"'))
+  .example('$0 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266', chalk.green('Calculate keccak256 hash of an address'))
+  .example('$0 "transfer(address,uint256)"', chalk.green('Calculate function signature'))
   .help()
   .alias('help', 'h')
+  .parserConfiguration({
+    'description-colors': true
+  })
+  .updateStrings({
+    'Options:': chalk.yellow.bold('Options:'),
+    'Examples:': chalk.green.bold('Examples:'),
+    'Positionals:': chalk.magenta.bold('Positionals:')
+  })
   .argv;
 
 if (argv._.length === 0) {

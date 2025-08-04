@@ -16,22 +16,22 @@ const __dirname = path.dirname(__filename);
 const yargsInstance = setupYargs(yargs(hideBin(process.argv)), 
   `${chalk.bold('Usage:')} $0 [options] <contract-address> <storage-slot> [block]`)
   .positional('contract-address', {
-    describe: 'Contract address to query storage from',
+    describe: chalk.cyan('Contract address to query storage from'),
     type: 'string',
     demandOption: true
   })
   .positional('storage-slot', {
-    describe: 'Storage slot to query (hex or decimal)',
+    describe: chalk.cyan('Storage slot to query (hex or decimal)'),
     type: 'string',
     demandOption: true
   })
   .positional('block', {
-    describe: 'Block number or "latest"',
+    describe: chalk.cyan('Block number or "latest"'),
     type: 'string',
     default: 'latest'
   })
-  .example('$0 0x1234... 0', 'Get storage at slot 0')
-  .example('$0 --chain polygon 0x1234... 0x1 1000000', 'Get storage at slot 0x1 at block 1000000 on Polygon');
+  .example('$0 0x1234... 0', chalk.green('Get storage at slot 0'))
+  .example('$0 --chain polygon 0x1234... 0x1 1000000', chalk.green('Get storage at slot 0x1 at block 1000000 on Polygon'));
 
 const argv = yargsInstance.argv;
 
