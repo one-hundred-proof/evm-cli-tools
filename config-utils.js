@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 // Path to the config directory and file
 export const CONFIG_DIR = path.join(os.homedir(), '.block-explorer-utils');
 export const CONFIG_PATH = path.join(CONFIG_DIR, 'config.json');
-export const CONFIG_PATH_DISPLAY = `~/.block-explorer-utils/config.json`;
+export const CONFIG_PATH_DISPLAY = `~/` + path.basename(CONFIG_DIR) + `/config.json`;
 const EXAMPLE_CONFIG_PATH = path.join(__dirname, 'config.json.example');
 
 // Read the config file

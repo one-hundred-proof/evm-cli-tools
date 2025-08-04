@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 import chalk from 'chalk';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { getCurrentChainConfig, setupYargs } from '../lib/config-utils.js';
+import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY } from '../lib/config-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,12 +32,12 @@ const chainConfig = getCurrentChainConfig(argv);
 const { chainName, scan_api_key, scan_api_domain } = chainConfig;
 
 if (!scan_api_key) {
-  console.error(chalk.red(`Please set scan_api_key for chain '${chainName}' in ~/.block-explorer-utils/config.json`));
+  console.error(chalk.red(`Please set scan_api_key for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
   exit(1);
 }
 
 if (!scan_api_domain) {
-  console.error(chalk.red(`Please set scan_api_domain for chain '${chainName}' in ~/.block-explorer-utils/config.json`));
+  console.error(chalk.red(`Please set scan_api_domain for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
   exit(1);
 }
 
