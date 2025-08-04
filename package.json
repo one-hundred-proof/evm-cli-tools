@@ -1,15 +1,21 @@
 {
   "name": "block-explorer-utils",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A collection of utilities to use with the block explorer APIs",
   "type": "module",
   "bin": {
     "keccak256": "./keccak256.js",
     "evm-to-checksum-address": "./evm-to-checksum-address.js",
-    "diff-contract-code": "./diff-contract-code.js"
+    "diff-contract-code": "./diff-contract-code.js",
+    "evm-get-storage": "./evm-get-storage",
+    "evm-get-logs": "./evm-get-logs",
+    "evm-get-logs-by-topic": "./evm-get-logs-by-topic",
+    "evm-pretty": "./evm-pretty",
+    "get-contract-code": "./get-contract-code"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "echo \"Configuration file will be created at ~/.block-explorer-utils/config.json when you first run any command\""
   },
   "repository": {
     "type": "git",
@@ -22,8 +28,10 @@
   },
   "homepage": "https://github.com/one-hundred-proof/block-explorer-utils#readme",
   "dependencies": {
-    "dotenv": "^16.0.3",
     "node-fetch": "^3.3.0",
     "web3": "^1.8.2"
+  },
+  "engines": {
+    "node": ">=14.16"
   }
 }
