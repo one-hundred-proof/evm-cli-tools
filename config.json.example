@@ -2,16 +2,16 @@
   "current-chain": "ethereum",
   "chains": {
     "ethereum": {
-      "infura_api_key": "YOUR_INFURA_API_KEY",
-      "infura_prefix": "https://mainnet.infura.io/v3",
-      "evmscan_api_key": "YOUR_ETHERSCAN_API_KEY",
-      "evmscan_api_domain": "api.etherscan.io"
+      "api_key": "YOUR_INFURA_API_KEY",
+      "prefix": "https://mainnet.infura.io/v3",
+      "scan_api_key": "YOUR_ETHERSCAN_API_KEY",
+      "scan_api_domain": "api.etherscan.io"
     },
     "polygon": {
-      "infura_api_key": "YOUR_INFURA_API_KEY",
-      "infura_prefix": "https://polygon-mainnet.infura.io/v3",
-      "evmscan_api_key": "YOUR_POLYGONSCAN_API_KEY",
-      "evmscan_api_domain": "api.polygonscan.com"
+      "api_key": "YOUR_INFURA_API_KEY",
+      "prefix": "https://polygon-mainnet.infura.io/v3",
+      "scan_api_key": "YOUR_POLYGONSCAN_API_KEY",
+      "scan_api_domain": "api.polygonscan.com"
     }
   }
 }

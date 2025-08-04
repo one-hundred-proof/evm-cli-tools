@@ -12,9 +12,24 @@ for ((i=1; i<=$#; i++)); do
 done
 
 # Read config file
-CONFIG_FILE="$THIS_DIR/config.json"
+CONFIG_FILE="$HOME/.block-explorer-utils/config.json"
 if [ ! -f "$CONFIG_FILE" ]; then
-  echo "Config file not found. Please copy config.json.example to config.json and fill in your API keys."
+  echo "Config file not found at $CONFIG_FILE"
+  echo "Creating directory and example config file. Please edit it with your API keys."
+  mkdir -p "$HOME/.block-explorer-utils"
+  cp "$THIS_DIR/config.json.example" "$CONFIG_FILE" 2>/dev/null || cat > "$CONFIG_FILE" << EOF
+{
+  "current-chain": "ethereum",
+  "chains": {
+    "ethereum": {
+      "api_key": "YOUR_INFURA_API_KEY",
+      "prefix": "https://mainnet.infura.io/v3",
+      "scan_api_key": "YOUR_ETHERSCAN_API_KEY",
+      "scan_api_domain": "api.etherscan.io"
+    }
+  }
+}
+EOF
   exit 1
 fi
 
@@ -27,16 +42,16 @@ fi
 jq --arg chain "$CHAIN" '.["current-chain"] = $chain' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" && mv "$CONFIG_FILE.tmp" "$CONFIG_FILE"
 
 # Get chain-specific configuration
-EVMSCAN_API_KEY=$(jq -r ".chains.\"$CHAIN\".evmscan_api_key" "$CONFIG_FILE")
-EVMSCAN_API_DOMAIN=$(jq -r ".chains.\"$CHAIN\".evmscan_api_domain" "$CONFIG_FILE")
+EVMSCAN_API_KEY=$(jq -r ".chains.\"$CHAIN\".scan_api_key" "$CONFIG_FILE")
+EVMSCAN_API_DOMAIN=$(jq -r ".chains.\"$CHAIN\".scan_api_domain" "$CONFIG_FILE")
 
 if [ "$EVMSCAN_API_KEY" = "" ] || [ "$EVMSCAN_API_KEY" = "null" ]; then
-  echo "Please set evmscan_api_key for chain '$CHAIN' in config.json"
+  echo "Please set scan_api_key for chain '$CHAIN' in $CONFIG_FILE"
   exit 1
 fi
 
 if [ "$EVMSCAN_API_DOMAIN" = "" ] || [ "$EVMSCAN_API_DOMAIN" = "null" ]; then
-  echo "Please set evmscan_api_domain for chain '$CHAIN' in config.json"
+  echo "Please set scan_api_domain for chain '$CHAIN' in $CONFIG_FILE"
   exit 1
 fi
 

@@ -1,18 +1,47 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import os from 'os';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Path to the config file
-const CONFIG_PATH = path.join(__dirname, 'config.json');
+// Path to the config directory and file
+const CONFIG_DIR = path.join(os.homedir(), '.block-explorer-utils');
+const CONFIG_PATH = path.join(CONFIG_DIR, 'config.json');
+const EXAMPLE_CONFIG_PATH = path.join(__dirname, 'config.json.example');
 
 // Read the config file
 export function readConfig() {
   try {
+    // Check if config directory exists, if not create it
+    if (!fs.existsSync(CONFIG_DIR)) {
+      fs.mkdirSync(CONFIG_DIR, { recursive: true });
+    }
+    
+    // Check if config file exists, if not create it from example
     if (!fs.existsSync(CONFIG_PATH)) {
-      console.error('Config file not found. Please copy config.json.example to config.json and fill in your API keys.');
+      console.error(`Config file not found at ${CONFIG_PATH}`);
+      console.error('Creating example config file. Please edit it with your API keys.');
+      
+      // Copy example config if it exists
+      if (fs.existsSync(EXAMPLE_CONFIG_PATH)) {
+        fs.copyFileSync(EXAMPLE_CONFIG_PATH, CONFIG_PATH);
+      } else {
+        // Create a basic config if example doesn't exist
+        const basicConfig = {
+          "current-chain": "ethereum",
+          "chains": {
+            "ethereum": {
+              "api_key": "YOUR_INFURA_API_KEY",
+              "prefix": "https://mainnet.infura.io/v3",
+              "scan_api_key": "YOUR_ETHERSCAN_API_KEY",
+              "scan_api_domain": "api.etherscan.io"
+            }
+          }
+        };
+        fs.writeFileSync(CONFIG_PATH, JSON.stringify(basicConfig, null, 2));
+      }
       process.exit(1);
     }
     
