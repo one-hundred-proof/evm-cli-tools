@@ -38,7 +38,9 @@ Example configuration:
 }
 ```
 
-All tools support the `--chain` flag to specify which blockchain network to use.
+The `current-chain` field specifies which chain configuration to use by default. When you run a command with the `--chain` flag (e.g., `--chain polygon`), this value is automatically updated in your config file, making that chain the new default for future commands.
+
+All tools support the `--chain` flag to specify which blockchain network to use. When you use this flag, the selected chain is saved as the "current-chain" in your config file, so subsequent commands will use the same chain by default until you specify a different one.
 
 ## The Tools
 
@@ -178,7 +180,16 @@ $ keccak256 "transfer(address,uint256)"
 
 All tools:
 - Display which blockchain network they're using
-- Support the `--chain` flag to specify the network
+- Support the `--chain` flag to specify the network (which persists between runs)
 - Provide colorized output for better readability
 - Include helpful error messages when configuration is missing
+
+### Chain Selection Persistence
+
+When you use the `--chain` flag with any command, your selection is saved to the config file as the "current-chain". This means:
+
+1. You only need to specify `--chain` once to switch chains
+2. All subsequent commands will use that chain by default
+3. You can always override the current chain by using `--chain` again
+4. The current chain is displayed in the output of every command
 
