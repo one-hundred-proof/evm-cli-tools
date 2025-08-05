@@ -1,4 +1,4 @@
-# Block Explorer Utilities
+# EVM CLI Tools
 
 A collection of command-line tools for interacting with Ethereum and other EVM-compatible blockchains.
 
@@ -10,7 +10,7 @@ $ npm install -g
 
 ## Configuration
 
-All tools use a shared configuration file located at `~/.block-explorer-utils/config.json`. This file will be created automatically on first run with example values.
+All tools use a shared configuration file located at `~/.evm-cli-tools/config.json`. This file will be created automatically on first run with example values.
 
 The configuration file contains:
 - API keys for different blockchain networks

@@ -1,5 +1,5 @@
 {
-  "name": "block-explorer-utils",
+  "name": "evm-cli-tools",
   "version": "0.1.0",
   "description": "A collection of utilities to use with the block explorer APIs",
   "type": "module",
@@ -18,14 +18,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/one-hundred-proof/block-explorer-utils.git"
+    "url": "git+https://github.com/one-hundred-proof/evm-cli-tools.git"
   },
   "author": "100proof",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/one-hundred-proof/block-explorer-utils/issues"
+    "url": "https://github.com/one-hundred-proof/evm-cli-tools/issues"
   },
-  "homepage": "https://github.com/one-hundred-proof/block-explorer-utils#readme",
+  "homepage": "https://github.com/one-hundred-proof/evm-cli-tools#readme",
   "dependencies": {
     "chalk":      "5.5.0",
     "node-fetch": "3.3.2",
