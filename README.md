@@ -5,7 +5,7 @@ A collection of command-line tools for interacting with Ethereum and other EVM-c
 ## Installation
 
 ```bash
-$ npm install
+$ npm install -g
 ```
 
 ## Configuration
