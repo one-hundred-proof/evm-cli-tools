@@ -9,6 +9,7 @@ import chalk from 'chalk';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY, displayChain } from '../lib/config-utils.js';
+import { createDirWithFallback, mkDirAndWriteFile, sliceOffFirstDirectory, getFilesRecursively } from '../lib/file-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -56,10 +57,6 @@ const mkSourceCodeUrl = (address) => {
   return `https://${scan_api_domain}/api?module=contract&action=getsourcecode&address=${argv.address}&apikey=${scan_api_key}`
 }
 
-const mkDirAndWriteFile = (dir, fileName, content) => {
-  fs.mkdirSync(path.join(dir, path.dirname(fileName)), { recursive: true });
-  fs.writeFileSync(path.join(dir, fileName), content);
-}
 
 // Returns directory and flag whether it is multiple files or not
 const getSourceFilesFromAddress = async (address) => {
@@ -94,7 +91,7 @@ const getSourceFilesFromAddress = async (address) => {
     for (let fileName in sourceObj) {
       if (!name) {
         name = path.basename(fileName, ".sol");
-        dir = fs.mkdtempSync(`${name}-${address}-`);
+        dir = createDirWithFallback(`${name}-${address.substring(0, 8)}`);
       }
       if (dir && sourceObj.hasOwnProperty(fileName)) {
         mkDirAndWriteFile(dir, fileName, sourceObj[fileName].content);
@@ -107,21 +104,6 @@ const getSourceFilesFromAddress = async (address) => {
 }
 
 
-const sliceOffFirstDirectory = (f) => {
-  return f.split("/").slice(1).join("/");
-}
-
-const getFilesRecursively = (dir) => {
-  let files = [];
-  fs.readdirSync(dir, { withFileTypes: true}).map(f => {
-    if (f.isDirectory()) {
-      files = files.concat(getFilesRecursively(path.join(dir, f.name)));
-    } else {
-      files.push(sliceOffFirstDirectory(path.join(dir,f.name)));
-    }
-  });
-  return files;
-};
 
 
 const r = await getSourceFilesFromAddress(argv.address);
