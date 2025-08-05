@@ -14,18 +14,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Setup command line arguments with yargs
-const yargsInstance = setupYargs(yargs(hideBin(process.argv)),
-  `${chalk.bold('Usage:')} $0 [options] <address>`)
-  .positional('address', {
-    describe: chalk.cyan('Contract address to get source code for'),
-    type: 'string',
-    demandOption: true
+const yargsInstance = setupYargs(yargs(hideBin(process.argv)))
+  .command('$0 <address>', "Get contract code for an address", (yargs) => {
+    yargs.positional('address', {
+      describe: chalk.cyan('Contract address to get source code for'),
+      type: 'string',
+      demandOption: true
+    })
+    .example(`${chalk.whiteBright('$0 0x1234...')}`, `${chalk.green('Get source code for contract 0x1234...')}`)
+    .example('$0 --chain polygon 0x1234...', `${chalk.green('Get source code for contract on Polygon')}`);
   })
-  .example(`${chalk.whiteBright('$0 0x1234...')}`, `${chalk.green('Get source code for contract 0x1234...')}`)
-  .example('$0 --chain polygon 0x1234...', `${chalk.green('Get source code for contract on Polygon')}`);
 
-
-const argv = yargsInstance.argv;
+const argv = yargsInstance.parse();
 
 // Get chain configuration
 const chainConfig = getCurrentChainConfig(argv);
@@ -45,16 +45,15 @@ if (!scan_api_domain) {
 }
 
 // Get positional arguments
-const address = argv._[0];
 
-if (!address) {
+if (!argv.address) {
   console.error(chalk.red('Missing required address argument'));
   yargsInstance.showHelp();
   exit(1);
 }
 
 const mkSourceCodeUrl = (address) => {
-  return `https://${scan_api_domain}/api?module=contract&action=getsourcecode&address=${address}&apikey=${scan_api_key}`
+  return `https://${scan_api_domain}/api?module=contract&action=getsourcecode&address=${argv.address}&apikey=${scan_api_key}`
 }
 
 const mkDirAndWriteFile = (dir, fileName, content) => {
@@ -125,6 +124,6 @@ const getFilesRecursively = (dir) => {
 };
 
 
-const r = await getSourceFilesFromAddress(address);
+const r = await getSourceFilesFromAddress(argv.address);
 getFilesRecursively(r.dir);
 console.log(`Files saved in ${r.dir}`);
