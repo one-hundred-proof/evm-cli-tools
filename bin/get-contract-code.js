@@ -30,7 +30,7 @@ const argv = yargsInstance.parse();
 
 // Get chain configuration
 const chainConfig = getCurrentChainConfig(argv);
-const { chainName, "scan-api-key": scanApiKey, "scan-api-domain": scanApiDomain } = chainConfig;
+const { chainName, "scan-api-key": scanApiKey, "scan-api-domain": scanApiDomain, "chain-id": chainId } = chainConfig;
 
 // Display which chain we're using
 displayChain(chainName);
@@ -53,12 +53,7 @@ if (!argv.address) {
   exit(1);
 }
 
-const mkSourceCodeUrl = (address) => {
-  return `https://${scanApiDomain}/api?module=contract&action=getsourcecode&address=${address}&apikey=${scanApiKey}`
-}
-
-
-const r = await getSourceFilesFromAddress(argv.address, scanApiDomain, scanApiKey);
+const r = await getSourceFilesFromAddress(argv.address, scanApiDomain, scanApiKey, chainId);
 getFilesRecursively(r.dir);
 console.log(chalk.yellow(`Files saved in ${chalk.bold(r.dir)}`));
 

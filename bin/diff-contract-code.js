@@ -41,7 +41,7 @@ const argv = yargsInstance.parse();
 
 // Get chain configuration
 const chainConfig = getCurrentChainConfig(argv);
-const { chainName, "scan-api-key": scanApiKey, "scan-api-domain": scanApiDomain } = chainConfig;
+const { chainName, "scan-api-key": scanApiKey, "scan-api-domain": scanApiDomain, "chain-id": chainId } = chainConfig;
 
 // Display which chain we're using
 displayChain(chainName);
@@ -69,14 +69,9 @@ if (argv.wordLevelDiffArg && argv.wordLevelDiffArg.toString().toLowerCase()[0] =
   wordLevelDiff = false;
 }
 
-const mkSourceCodeUrl = (address) => {
-  return `https://${scanApiDomain}/api?module=contract&action=getsourcecode&address=${address}&apikey=${scanApiKey}`
-}
 
-
-
-const r1 = await getSourceFilesFromAddress(argv.address1, scanApiDomain, scanApiKey);
-const r2 = await getSourceFilesFromAddress(argv.address2, scanApiDomain, scanApiKey);
+const r1 = await getSourceFilesFromAddress(argv.address1, scanApiDomain, scanApiKey, chainId);
+const r2 = await getSourceFilesFromAddress(argv.address2, scanApiDomain, scanApiKey, chainId);
 
 const rmRf = (dir) => {
   fs.rmSync(dir, { recursive: true, force: true});

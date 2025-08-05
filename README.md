@@ -26,13 +26,15 @@ Example configuration:
       "api-key": "YOUR_INFURA_API_KEY",
       "prefix": "https://mainnet.infura.io/v3",
       "scan-api-key": "YOUR_ETHERSCAN_API_KEY",
-      "scan-api-domain": "api.etherscan.io"
+      "scan-api-domain": "api.etherscan.io",
+      "chain-id": 1
     },
     "polygon": {
       "api-key": "YOUR_INFURA_API_KEY",
       "prefix": "https://polygon-mainnet.infura.io/v3",
       "scan-api-key": "YOUR_POLYGONSCAN_API_KEY",
-      "scan-api-domain": "api.polygonscan.com"
+      "scan-api-domain": "api.polygonscan.com",
+      "chain-id": 137
     }
   }
 }
