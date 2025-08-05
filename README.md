@@ -51,7 +51,7 @@ All tools support the `--chain` flag to specify which blockchain network to use.
 Compare verified smart contract code deployed at two different addresses.
 
 ```bash
-$ evm-diff <address1> <address2> [word-level-diff]
+evm-diff <address1> <address2> [word-level-diff]
 ```
 
 **Options:**
@@ -61,7 +61,7 @@ $ evm-diff <address1> <address2> [word-level-diff]
 
 **Example:**
 ```bash
-$ evm-diff 0x19890cf5c9a0b8d2f71eb71347d126b6f7d78b76 0x83597765904e28e3a360c17cb1f5635cbcbfdd63
+evm-diff --chain ethereum 0x19890cf5c9a0b8d2f71eb71347d126b6f7d78b76 0x83597765904e28e3a360c17cb1f5635cbcbfdd63
 ```
 
 The tool will:
@@ -75,7 +75,7 @@ The tool will:
 Download verified smart contract code for a specific address.
 
 ```bash
-$ evm-get-code <address>
+evm-get-code <address>
 ```
 
 **Options:**
@@ -83,7 +83,7 @@ $ evm-get-code <address>
 
 **Example:**
 ```bash
-$ evm-get-code 0x1234abcd...
+evm-get-code 0x1234abcd...
 ```
 
 The tool will download all source files and save them to a directory named after the contract. If a proxy contract is detected, it will automatically fetch the implementation contract code as well and save it to a separate directory.
@@ -103,7 +103,7 @@ $ evm-get-storage <contract> <slot> [block]
 
 **Example:**
 ```bash
-$ evm-get-storage 0x1234abcd... 0 latest
+evm-get-storage 0x1234abcd... 0 latest
 ```
 
 ### `evm-get-logs-by-topic`
@@ -111,7 +111,7 @@ $ evm-get-storage 0x1234abcd... 0 latest
 Get event logs from a contract filtered by a specific topic.
 
 ```bash
-$ evm-get-logs-by-topic <address> <topic> [from-block] [to-block]
+evm-get-logs-by-topic <address> <topic> [from-block] [to-block]
 ```
 
 **Options:**
@@ -123,7 +123,7 @@ $ evm-get-logs-by-topic <address> <topic> [from-block] [to-block]
 
 **Example:**
 ```bash
-$ evm-get-logs-by-topic 0x1234abcd... 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef 1000000 latest
+evm-get-logs-by-topic 0x1234abcd... 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef 1000000 latest
 ```
 
 ### `evm-pretty`
@@ -131,7 +131,7 @@ $ evm-get-logs-by-topic 0x1234abcd... 0xddf252ad1be2c89b69c2b068fc378daa952ba7f1
 Format large numbers with underscores for better readability, especially useful for token amounts.
 
 ```bash
-$ evm-pretty <number> [decimals]
+evm-pretty <number> [decimals]
 ```
 
 **Options:**
@@ -140,7 +140,10 @@ $ evm-pretty <number> [decimals]
 
 **Example:**
 ```bash
-$ evm-pretty 1000000000000000000 18
+evm-pretty 1000000000000000000 18
+```
+
+```bash
 # Output: 1_000000000000000000
 ```
 
@@ -149,7 +152,7 @@ $ evm-pretty 1000000000000000000 18
 Convert Ethereum addresses to checksum format.
 
 ```bash
-$ evm-to-checksum-address <addresses...>
+evm-to-checksum-address <addresses...>
 ```
 
 **Options:**
@@ -157,7 +160,10 @@ $ evm-to-checksum-address <addresses...>
 
 **Example:**
 ```bash
-$ evm-to-checksum-address 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+evm-to-checksum-address 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+```
+
+```bash
 # Output: 0xF39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 ```
 
@@ -166,7 +172,7 @@ $ evm-to-checksum-address 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
 Calculate the keccak256 hash of a string, useful for generating event signatures.
 
 ```bash
-$ evm-keccak <string>...
+evm-keccak <string>...
 ```
 
 **Options:**
@@ -174,7 +180,10 @@ $ evm-keccak <string>...
 
 **Example:**
 ```bash
-$ evm-keccak "transfer(address,uint256)"
+evm-keccak "transfer(address,uint256)"
+```
+
+```bash
 # Output: 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
 ```
 
