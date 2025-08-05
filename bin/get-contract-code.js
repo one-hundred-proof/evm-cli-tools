@@ -9,7 +9,7 @@ import chalk from 'chalk';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY, displayChain } from '../lib/config-utils.js';
-import { createDirWithFallback, mkDirAndWriteFile, sliceOffFirstDirectory, getFilesRecursively } from '../lib/file-utils.js';
+import { createDirWithFallback, mkDirAndWriteFile, sliceOffFirstDirectory, getFilesRecursively, getSourceFilesFromAddress } from '../lib/file-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,59 +54,15 @@ if (!argv.address) {
 }
 
 const mkSourceCodeUrl = (address) => {
-  return `https://${scanApiDomain}/api?module=contract&action=getsourcecode&address=${argv.address}&apikey=${scanApiKey}`
-}
-
-
-// Returns directory and flag whether it is multiple files or not
-const getSourceFilesFromAddress = async (address) => {
-  const response = await fetch(mkSourceCodeUrl(address));
-
-  const data = await response.json();
-
-  if (data.status != "1") {
-    console.log(`Could not retrieve source code from address ${address}`);
-    console.log(data);
-    exit(1);
-  }
-
-  const sourceCode = data.result[0].SourceCode;
-
-  let areMultipleFiles = false;
-
-  let sourceObj;
-  if (sourceCode.slice(0,2) == "{{") {
-    try {
-      sourceObj = JSON.parse(sourceCode.slice(1,sourceCode.length - 1)).sources;
-      areMultipleFiles = true;
-    } catch (e) {
-      areMultipleFiles = false;
-    }
-  }
-
-  let name;
-  let dir;
-
-  if (areMultipleFiles) {
-    for (let fileName in sourceObj) {
-      if (!name) {
-        name = path.basename(fileName, ".sol");
-        dir = createDirWithFallback(`${name}-${address}`);
-      }
-      if (dir && sourceObj.hasOwnProperty(fileName)) {
-        mkDirAndWriteFile(dir, fileName, sourceObj[fileName].content);
-      }
-    }
-  } else { // Just one flattened source files
-    mkDirAndWriteFile(dir, "Source.sol", sourceCode);
-  }
-  return { dir: dir, areMultipleFiles: areMultipleFiles };
+  return `https://${scanApiDomain}/api?module=contract&action=getsourcecode&address=${address}&apikey=${scanApiKey}`
 }
 
 
 
 
-const r = await getSourceFilesFromAddress(argv.address);
+
+
+const r = await getSourceFilesFromAddress(argv.address, scanApiDomain, scanApiKey);
 getFilesRecursively(r.dir);
 console.log(chalk.yellow(`Files saved in ${chalk.bold(r.dir)}`));
 

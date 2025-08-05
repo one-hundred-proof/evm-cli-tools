@@ -10,7 +10,7 @@ import chalk from 'chalk';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY, displayChain } from '../lib/config-utils.js';
-import { createDirWithFallback, mkDirAndWriteFile, sliceOffFirstDirectory, getFilesRecursively } from '../lib/file-utils.js';
+import { createDirWithFallback, mkDirAndWriteFile, sliceOffFirstDirectory, getFilesRecursively, getSourceFilesFromAddress } from '../lib/file-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -74,47 +74,9 @@ const mkSourceCodeUrl = (address) => {
 }
 
 
-// Returns directory and flag whether it is multiple files or not
-const getSourceFilesFromAddress = async (address) => {
-  const response = await fetch(mkSourceCodeUrl(address));
 
-  const data = await response.json();
-  if (data.status != "1") {
-    console.log(`Could not retrieve source code from address ${address}`);
-    exit(1);
-  }
-
-  const sourceCode = data.result[0].SourceCode;
-
-  let dir = createDirWithFallback(`contract-${address.substring(0, 8)}`);
-  let areMultipleFiles = false;
-
-  let sourceObj;
-  if (sourceCode.slice(0,2) == "{{") {
-    try {
-      sourceObj = JSON.parse(sourceCode.slice(1,sourceCode.length - 1)).sources;
-      areMultipleFiles = true;
-    } catch (e) {
-      areMultipleFiles = false;
-    }
-  }
-
-
-
-  if (areMultipleFiles) {
-    for (let fileName in sourceObj) {
-      if (sourceObj.hasOwnProperty(fileName)) {
-        mkDirAndWriteFile(dir, fileName, sourceObj[fileName].content);
-      }
-    }
-  } else { // Just one flattened source files
-    mkDirAndWriteFile(dir, "Source.sol", sourceCode);
-  }
-  return { dir: dir, areMultipleFiles: areMultipleFiles };
-}
-
-const r1 = await getSourceFilesFromAddress(argv.address1);
-const r2 = await getSourceFilesFromAddress(argv.address2);
+const r1 = await getSourceFilesFromAddress(argv.address1, scanApiDomain, scanApiKey);
+const r2 = await getSourceFilesFromAddress(argv.address2, scanApiDomain, scanApiKey);
 
 const rmRf = (dir) => {
   fs.rmSync(dir, { recursive: true, force: true});
