@@ -58,10 +58,6 @@ const mkSourceCodeUrl = (address) => {
 }
 
 
-
-
-
-
 const r = await getSourceFilesFromAddress(argv.address, scanApiDomain, scanApiKey);
 getFilesRecursively(r.dir);
 console.log(chalk.yellow(`Files saved in ${chalk.bold(r.dir)}`));
