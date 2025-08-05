@@ -53,7 +53,24 @@ if (!argv.address) {
   exit(1);
 }
 
-const r = await getSourceFilesFromAddress(argv.address, scanApiDomain, scanApiKey, chainId);
-getFilesRecursively(r.dir);
-console.log(chalk.yellow(`Files saved in ${chalk.bold(r.dir)}`));
+// Get the proxy contract source code
+const proxyResult = await getSourceFilesFromAddress(argv.address, scanApiDomain, scanApiKey, chainId);
+getFilesRecursively(proxyResult.dir);
+console.log(chalk.yellow(`Proxy files saved in ${chalk.bold(proxyResult.dir)}`));
+
+// If this is a proxy contract, also get the implementation contract
+if (proxyResult.implementationAddress) {
+  console.log(chalk.blue(`Detected proxy contract. Getting implementation at ${chalk.bold(proxyResult.implementationAddress)}`));
+  
+  const implResult = await getSourceFilesFromAddress(
+    proxyResult.implementationAddress, 
+    scanApiDomain, 
+    scanApiKey, 
+    chainId,
+    argv.address
+  );
+  
+  getFilesRecursively(implResult.dir);
+  console.log(chalk.yellow(`Implementation files saved in ${chalk.bold(implResult.dir)}`));
+}
 
