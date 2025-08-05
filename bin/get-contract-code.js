@@ -31,6 +31,11 @@ const argv = yargsInstance.argv;
 const chainConfig = getCurrentChainConfig(argv);
 const { chainName, scan_api_key, scan_api_domain } = chainConfig;
 
+// Display which chain we're using if not specified via command line
+if (!argv.chain) {
+  console.log(chalk.blue(`Using chain: ${chalk.bold(chainName)}`));
+}
+
 if (!scan_api_key) {
   console.error(chalk.red(`Please set scan_api_key for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
   exit(1);
