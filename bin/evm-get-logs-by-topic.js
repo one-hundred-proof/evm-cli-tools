@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import chalk from 'chalk';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY } from '../lib/config-utils.js';
+import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY, displayChain } from '../lib/config-utils.js';
 
 // Setup command line arguments with yargs
 const yargsInstance = setupYargs(yargs(hideBin(process.argv)))
@@ -44,10 +44,8 @@ const argv = yargsInstance.parse();
 const chainConfig = getCurrentChainConfig(argv);
 const { chainName, scan_api_key, scan_api_domain } = chainConfig;
 
-// Display which chain we're using if not specified via command line
-if (!argv.chain) {
-  console.log(chalk.blue(`Using chain: ${chalk.bold(chainName)}`));
-}
+// Display which chain we're using
+displayChain(chainName);
 
 if (!scan_api_key) {
   console.error(chalk.red(`Please set scan_api_key for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
