@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-import fetch from 'node-fetch';
-import fs from 'fs';
 import path from 'path';
 import { exit } from 'process';
 import { fileURLToPath } from 'url';

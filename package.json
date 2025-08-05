@@ -13,8 +13,7 @@
     "evm-get-code": "./bin/evm-get-code.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "node -e \"import('./lib/config-utils.js').then(({CONFIG_PATH_DISPLAY}) => console.log(`Configuration file will be created at ${CONFIG_PATH_DISPLAY} when you first run any command`))\" --input-type=module"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
