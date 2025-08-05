@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename);
 
 // Setup command line arguments with yargs
 const yargsInstance = setupYargs(yargs(hideBin(process.argv)))
-  .command('$0 [options] <address1> <address2> [word-level-diff]', "", (yargs) => {
+  .command('$0 <address1> <address2> [word-level-diff]', "Do a file by file diff between two contract addresses", (yargs) => {
     yargs.positional('address1', {
       describe: chalk.cyan('First contract address to compare'),
       type: 'string',
@@ -53,18 +53,15 @@ if (!scan_api_domain) {
 }
 
 // Get positional arguments
-const address1 = argv._[0];
-const address2 = argv._[1];
-const wordLevelDiffArg = argv._[2];
 
-if (!address1 || !address2) {
+if (!argv.address1 || !argv.address2) {
   console.error(chalk.red('Missing required address arguments'));
   yargsInstance.showHelp();
   exit(1);
 }
 
 let wordLevelDiff = true;
-if (wordLevelDiffArg && wordLevelDiffArg.toString().toLowerCase()[0] === 'f') {
+if (argv.wordLevelDiffArg && argv.wordLevelDiffArg.toString().toLowerCase()[0] === 'f') {
   wordLevelDiff = false;
 }
 
@@ -117,8 +114,8 @@ const getSourceFilesFromAddress = async (address) => {
   return { dir: dir, areMultipleFiles: areMultipleFiles };
 }
 
-const r1 = await getSourceFilesFromAddress(address1);
-const r2 = await getSourceFilesFromAddress(address2);
+const r1 = await getSourceFilesFromAddress(argv.address1);
+const r2 = await getSourceFilesFromAddress(argv.address2);
 
 const rmRf = (dir) => {
   fs.rmSync(dir, { recursive: true, force: true});
@@ -144,8 +141,8 @@ const getFilesRecursively = (dir) => {
 const files1 = getFilesRecursively(r1.dir);
 const files2 = getFilesRecursively(r2.dir);
 
-console.log(chalk.blue(`Address 1: ${chalk.bold(address1)}`));
-console.log(chalk.blue(`Address 2: ${chalk.bold(address2)}`));
+console.log(chalk.blue(`Address 1: ${chalk.bold(argv.address1)}`));
+console.log(chalk.blue(`Address 2: ${chalk.bold(argv.address2)}`));
 
 if (r1.areMultipleFiles && r2.areMultipleFiles) {
   console.log(`\n=== Files at first address but not second ===`);
@@ -190,9 +187,9 @@ if (r1.areMultipleFiles == r2.areMultipleFiles) {
     }
   }
 } else if (r1.areMultipleFiles) {
-  console.log(`Error: Multiple files at address ${address1} and not ${address2}`);
+  console.log(`Error: Multiple files at address ${argv.address1} and not ${argv.address2}`);
 } else if (r2.areMultipleFiles) {
-  console.log(`Error: Multiple files at address ${address2} and not ${address1}`);
+  console.log(`Error: Multiple files at address ${argv.address2} and not ${argv.address1}`);
 
 }
 
