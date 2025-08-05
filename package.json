@@ -6,12 +6,11 @@
   "bin": {
     "keccak256": "./bin/keccak256.js",
     "evm-to-checksum-address": "./bin/evm-to-checksum-address.js",
-    "diff-contract-code": "./bin/diff-contract-code.js",
+    "evm-diff": "./bin/evm-diff.js",
     "evm-get-storage": "./bin/evm-get-storage.js",
-    "evm-get-logs": "./bin/evm-get-logs.js",
     "evm-get-logs-by-topic": "./bin/evm-get-logs-by-topic.js",
     "evm-pretty": "./bin/evm-pretty.js",
-    "get-contract-code": "./bin/get-contract-code.js"
+    "evm-get-code": "./bin/evm-get-code.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
