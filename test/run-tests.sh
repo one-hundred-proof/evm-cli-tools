@@ -17,4 +17,9 @@ echo -e "\n[+] diff-contract-code"
 ./diff-contract-code.js --chain ethereum 0x152442d77e9fb9c210953d583cbb2da88027fcb9 0x282fd46e108e40a45e4ce425ba75f80245e6c2e0
 
 echo -e "\n[+] get-contract-code"
-./get-contract-code.js --chain ethereum 0x152442d77e9fb9c210953d583cbb2da88027fcb9
+TMPFILE=$(mktemp "get-contract-code-XXXXX.out")
+echo "TMPFILE $TMPFILE"
+./get-contract-code.js --chain ethereum 0x152442d77e9fb9c210953d583cbb2da88027fcb9 2>&1 | tee "$TMPFILE"
+CONTRACT_DIR=$(cat $TMPFILE | grep 'Files saved' | sed 's/Files saved in//')
+rm -rf "$CONTRACT_DIR" "$TMPFILE"
+
