@@ -15,3 +15,6 @@ echo -e "\n[+] evm-to-checksum-address"
 
 echo -e "\n[+] diff-contract-code"
 ./diff-contract-code.js --chain ethereum 0x152442d77e9fb9c210953d583cbb2da88027fcb9 0x282fd46e108e40a45e4ce425ba75f80245e6c2e0
+
+echo -e "\n[+] get-contract-code"
+./get-contract-code.js --chain ethereum 0x152442d77e9fb9c210953d583cbb2da88027fcb9
