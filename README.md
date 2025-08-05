@@ -1,4 +1,6 @@
-# Tools to use with block explorers
+# Block Explorer Utilities
+
+A collection of command-line tools for interacting with Ethereum and other EVM-compatible blockchains.
 
 ## Installation
 
@@ -6,59 +8,177 @@
 $ npm install
 ```
 
-## The tools
-### `diff-contract-code`  and `get-contract-code`
+## Configuration
 
-This tool will download the verified smart contract code deployed at a particular address and do a file-by-file diff.
+All tools use a shared configuration file located at `~/.block-explorer-utils/config.json`. This file will be created automatically on first run with example values.
 
-#### Configuration
+The configuration file contains:
+- API keys for different blockchain networks
+- RPC endpoints
+- Block explorer API domains
 
-1.
-  Two environment variables control the behaviour of the tools: `EVMSCAN_API_KEY` and `EVMSCAN_API_DOMAIN`
-   - `EVMSCAN_API_KEY` is required. It can be placed in a `.env` file or exported.
-   - `EVMSCAN_API_DOMAIN` is optional and will default to `$EVMSCAN_API_DOMAIN`. However, if you want to use the API on other EVM-compatible blockchains you will have to specify this. e.g. `EVMSCAN_API_DOMAIN=api.fraxscan.com`
+Example configuration:
+```json
+{
+  "current-chain": "ethereum",
+  "chains": {
+    "ethereum": {
+      "api_key": "YOUR_INFURA_API_KEY",
+      "prefix": "https://mainnet.infura.io/v3",
+      "scan_api_key": "YOUR_ETHERSCAN_API_KEY",
+      "scan_api_domain": "api.etherscan.io"
+    },
+    "polygon": {
+      "api_key": "YOUR_INFURA_API_KEY",
+      "prefix": "https://polygon-mainnet.infura.io/v3",
+      "scan_api_key": "YOUR_POLYGONSCAN_API_KEY",
+      "scan_api_domain": "api.polygonscan.com"
+    }
+  }
+}
+```
 
-2.
-  The tool can also be used with other block explorer APIs by setting the `EVMSCAN_API_DOMAIN` environment variable. However, they must be clones of $EVMSCAN_API_DOMAIN
+All tools support the `--chain` flag to specify which blockchain network to use.
 
-eg. `export EVMSCAN_API_DOMAIN=api.polygonscan.com`
+## The Tools
 
-#### Example
+### `diff-contract-code`
 
+Compare verified smart contract code deployed at two different addresses.
+
+```bash
+$ diff-contract-code <address1> <address2> [word-level-diff]
+```
+
+**Options:**
+- `address1`: First contract address to compare
+- `address2`: Second contract address to compare
+- `word-level-diff`: Use word-level diff (true/false, defaults to true)
+
+**Example:**
 ```bash
 $ diff-contract-code 0x19890cf5c9a0b8d2f71eb71347d126b6f7d78b76 0x83597765904e28e3a360c17cb1f5635cbcbfdd63
 ```
 
-**Output**
+The tool will:
+1. Download verified source code for both contracts
+2. Compare files that exist in both contracts
+3. List files that exist in one contract but not the other
+4. Show a detailed diff of the differences
 
+### `get-contract-code`
+
+Download verified smart contract code for a specific address.
+
+```bash
+$ get-contract-code <address>
 ```
-Address 1: 0x19890cf5c9a0b8d2f71eb71347d126b6f7d78b76
-Address 2: 0x83597765904e28e3a360c17cb1f5635cbcbfdd63
 
-* At first address but not second
-  - @equilibria/emptyset-batcher/batcher/Batcher.sol
-  - @equilibria/root/control/unstructured/UOwnable.sol
+**Options:**
+- `address`: Contract address to get source code for
 
-* At second address but not first
-  - @equilibria/emptyset-batcher/interfaces/IEmptySetReserve.sol
-
-* Diffs follow
-...
-diff --git a/temp-A5Qgkb/contracts/interfaces/IParamProvider.sol b/temp-mPCUS4/contracts/interfaces/IParamProvider.sol
-index 23430d3..8d6c2f7 100644
---- a/temp-A5Qgkb/contracts/interfaces/IParamProvider.sol
-+++ b/temp-mPCUS4/contracts/interfaces/IParamProvider.sol
-@@ -20,10 +20,7 @@ interface IParamProvider {
-        uint256 version
-    );
-
-    error [-ParamProviderInvalidMakerFee();-]
-[-    error ParamProviderInvalidTakerFee();-]
-[-    error ParamProviderInvalidPositionFee();-]
-[-    error ParamProviderInvalidFundingFee();-]{+ParamProviderInvalidParamValue();+}
-
-    function maintenance() external view returns (UFixed18);
-    function updateMaintenance(UFixed18 newMaintenance) external;
-...
+**Example:**
+```bash
+$ get-contract-code 0x1234abcd...
 ```
+
+The tool will download all source files and save them to a directory named after the contract.
+
+### `evm-get-storage`
+
+Query the storage at a specific slot in a contract.
+
+```bash
+$ evm-get-storage <contract> <slot> [block]
+```
+
+**Options:**
+- `contract`: Contract address to query storage from
+- `slot`: Storage slot to query (hex or decimal)
+- `block`: Block number or "latest" (defaults to "latest")
+
+**Example:**
+```bash
+$ evm-get-storage 0x1234abcd... 0 latest
+```
+
+### `evm-get-logs-by-topic`
+
+Get event logs from a contract filtered by a specific topic.
+
+```bash
+$ evm-get-logs-by-topic <address> <topic> [from-block] [to-block]
+```
+
+**Options:**
+- `address`: Contract address to get logs for
+- `topic`: Event topic hash (keccak256 of the event signature)
+- `from-block`: Starting block number (defaults to 1)
+- `to-block`: Ending block number or "latest" (defaults to "latest")
+- `--pretty`: Pretty print the output (defaults to true)
+
+**Example:**
+```bash
+$ evm-get-logs-by-topic 0x1234abcd... 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef 1000000 latest
+```
+
+### `evm-pretty`
+
+Format large numbers with underscores for better readability, especially useful for token amounts.
+
+```bash
+$ evm-pretty <number> [decimals]
+```
+
+**Options:**
+- `number`: Large number to format (can be in hex or decimal)
+- `decimals`: Number of decimal places (defaults to 18)
+
+**Example:**
+```bash
+$ evm-pretty 1000000000000000000 18
+# Output: 1_000000000000000000
+```
+
+### `evm-to-checksum-address`
+
+Convert Ethereum addresses to checksum format.
+
+```bash
+$ evm-to-checksum-address <addresses...>
+```
+
+**Options:**
+- `addresses`: One or more Ethereum addresses to convert
+
+**Example:**
+```bash
+$ evm-to-checksum-address 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+# Output: 0xF39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+```
+
+### `keccak256`
+
+Calculate the keccak256 hash of a string, useful for generating event signatures.
+
+```bash
+$ keccak256 <string>...
+```
+
+**Options:**
+- `string`: One or more strings to hash with keccak256
+
+**Example:**
+```bash
+$ keccak256 "transfer(address,uint256)"
+# Output: 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
+```
+
+## Common Features
+
+All tools:
+- Display which blockchain network they're using
+- Support the `--chain` flag to specify the network
+- Provide colorized output for better readability
+- Include helpful error messages when configuration is missing
 
