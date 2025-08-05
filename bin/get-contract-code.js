@@ -91,7 +91,7 @@ const getSourceFilesFromAddress = async (address) => {
     for (let fileName in sourceObj) {
       if (!name) {
         name = path.basename(fileName, ".sol");
-        dir = createDirWithFallback(`${name}-${address.substring(0, 8)}`);
+        dir = createDirWithFallback(`${name}-${address}`);
       }
       if (dir && sourceObj.hasOwnProperty(fileName)) {
         mkDirAndWriteFile(dir, fileName, sourceObj[fileName].content);
@@ -108,4 +108,5 @@ const getSourceFilesFromAddress = async (address) => {
 
 const r = await getSourceFilesFromAddress(argv.address);
 getFilesRecursively(r.dir);
-console.log(`Files saved in ${r.dir}`);
+console.log(chalk.yellow(`Files saved in ${chalk.bold(r.dir)}`));
+
