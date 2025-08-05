@@ -39,13 +39,13 @@ const argv = yargsInstance.parse();
 
 // Get chain configuration
 const chainConfig = getCurrentChainConfig(argv);
-const { chainName, api_key, prefix } = chainConfig;
+const { chainName, "api-key": apiKey, prefix } = chainConfig;
 
 // Display which chain we're using
 displayChain(chainName);
 
-if (!api_key) {
-  console.error(chalk.red(`Please set api_key for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
+if (!apiKey) {
+  console.error(chalk.red(`Please set api-key for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
   process.exit(1);
 }
 
@@ -60,7 +60,7 @@ if (!argv.contract || argv.slot === undefined) {
 
 console.log(chalk.blue(`Storage at slot ${chalk.bold(argv.slot)}:`));
 
-const url = `${rpcPrefix}/${api_key}`;
+const url = `${rpcPrefix}/${apiKey}`;
 const body = {
   jsonrpc: "2.0",
   method: "eth_getStorageAt",

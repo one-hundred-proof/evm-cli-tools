@@ -30,18 +30,18 @@ const argv = yargsInstance.parse();
 
 // Get chain configuration
 const chainConfig = getCurrentChainConfig(argv);
-const { chainName, scan_api_key, scan_api_domain } = chainConfig;
+const { chainName, "scan-api-key": scanApiKey, "scan-api-domain": scanApiDomain } = chainConfig;
 
 // Display which chain we're using
 displayChain(chainName);
 
-if (!scan_api_key) {
-  console.error(chalk.red(`Please set scan_api_key for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
+if (!scanApiKey) {
+  console.error(chalk.red(`Please set scan-api-key for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
   exit(1);
 }
 
-if (!scan_api_domain) {
-  console.error(chalk.red(`Please set scan_api_domain for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
+if (!scanApiDomain) {
+  console.error(chalk.red(`Please set scan-api-domain for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
   exit(1);
 }
 
@@ -54,7 +54,7 @@ if (!argv.address) {
 }
 
 const mkSourceCodeUrl = (address) => {
-  return `https://${scan_api_domain}/api?module=contract&action=getsourcecode&address=${argv.address}&apikey=${scan_api_key}`
+  return `https://${scanApiDomain}/api?module=contract&action=getsourcecode&address=${argv.address}&apikey=${scanApiKey}`
 }
 
 

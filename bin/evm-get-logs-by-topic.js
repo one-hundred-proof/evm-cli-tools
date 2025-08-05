@@ -42,18 +42,18 @@ const argv = yargsInstance.parse();
 
 // Get chain configuration
 const chainConfig = getCurrentChainConfig(argv);
-const { chainName, scan_api_key, scan_api_domain } = chainConfig;
+const { chainName, "scan-api-key": scanApiKey, "scan-api-domain": scanApiDomain } = chainConfig;
 
 // Display which chain we're using
 displayChain(chainName);
 
-if (!scan_api_key) {
-  console.error(chalk.red(`Please set scan_api_key for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
+if (!scanApiKey) {
+  console.error(chalk.red(`Please set scan-api-key for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
   process.exit(1);
 }
 
-if (!scan_api_domain) {
-  console.error(chalk.red(`Please set scan_api_domain for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
+if (!scanApiDomain) {
+  console.error(chalk.red(`Please set scan-api-domain for chain '${chainName}' in ${CONFIG_PATH_DISPLAY}`));
   process.exit(1);
 }
 
@@ -69,7 +69,7 @@ if (!address || !topic) {
   process.exit(1);
 }
 
-const url = `https://${scan_api_domain}/api?module=logs&action=getLogs&address=${address}&fromBlock=${fromBlock}&toBlock=${toBlock}&apikey=${scan_api_key}&topic0=${topic}`;
+const url = `https://${scanApiDomain}/api?module=logs&action=getLogs&address=${address}&fromBlock=${fromBlock}&toBlock=${toBlock}&apikey=${scanApiKey}&topic0=${topic}`;
 
 fetch(url)
   .then(response => response.json())

@@ -23,16 +23,16 @@ Example configuration:
   "current-chain": "ethereum",
   "chains": {
     "ethereum": {
-      "api_key": "YOUR_INFURA_API_KEY",
+      "api-key": "YOUR_INFURA_API_KEY",
       "prefix": "https://mainnet.infura.io/v3",
-      "scan_api_key": "YOUR_ETHERSCAN_API_KEY",
-      "scan_api_domain": "api.etherscan.io"
+      "scan-api-key": "YOUR_ETHERSCAN_API_KEY",
+      "scan-api-domain": "api.etherscan.io"
     },
     "polygon": {
-      "api_key": "YOUR_INFURA_API_KEY",
+      "api-key": "YOUR_INFURA_API_KEY",
       "prefix": "https://polygon-mainnet.infura.io/v3",
-      "scan_api_key": "YOUR_POLYGONSCAN_API_KEY",
-      "scan_api_domain": "api.polygonscan.com"
+      "scan-api-key": "YOUR_POLYGONSCAN_API_KEY",
+      "scan-api-domain": "api.polygonscan.com"
     }
   }
 }
