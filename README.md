@@ -46,12 +46,12 @@ All tools support the `--chain` flag to specify which blockchain network to use.
 
 ## The Tools
 
-### `diff-contract-code`
+### `evm-diff`
 
 Compare verified smart contract code deployed at two different addresses.
 
 ```bash
-$ diff-contract-code <address1> <address2> [word-level-diff]
+$ evm-diff <address1> <address2> [word-level-diff]
 ```
 
 **Options:**
@@ -61,7 +61,7 @@ $ diff-contract-code <address1> <address2> [word-level-diff]
 
 **Example:**
 ```bash
-$ diff-contract-code 0x19890cf5c9a0b8d2f71eb71347d126b6f7d78b76 0x83597765904e28e3a360c17cb1f5635cbcbfdd63
+$ evm-diff 0x19890cf5c9a0b8d2f71eb71347d126b6f7d78b76 0x83597765904e28e3a360c17cb1f5635cbcbfdd63
 ```
 
 The tool will:
@@ -70,12 +70,12 @@ The tool will:
 3. List files that exist in one contract but not the other
 4. Show a detailed diff of the differences
 
-### `get-contract-code`
+### `evm-get-code`
 
 Download verified smart contract code for a specific address.
 
 ```bash
-$ get-contract-code <address>
+$ evm-get-code <address>
 ```
 
 **Options:**
@@ -83,10 +83,10 @@ $ get-contract-code <address>
 
 **Example:**
 ```bash
-$ get-contract-code 0x1234abcd...
+$ evm-get-code 0x1234abcd...
 ```
 
-The tool will download all source files and save them to a directory named after the contract.
+The tool will download all source files and save them to a directory named after the contract. If a proxy contract is detected, it will automatically fetch the implementation contract code as well and save it to a separate directory.
 
 ### `evm-get-storage`
 
@@ -161,12 +161,12 @@ $ evm-to-checksum-address 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
 # Output: 0xF39Fd6e51aad88F6F4ce6aB8827279cffFb92266
 ```
 
-### `keccak256`
+### `evm-keccak`
 
 Calculate the keccak256 hash of a string, useful for generating event signatures.
 
 ```bash
-$ keccak256 <string>...
+$ evm-keccak <string>...
 ```
 
 **Options:**
@@ -174,7 +174,7 @@ $ keccak256 <string>...
 
 **Example:**
 ```bash
-$ keccak256 "transfer(address,uint256)"
+$ evm-keccak "transfer(address,uint256)"
 # Output: 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef
 ```
 
