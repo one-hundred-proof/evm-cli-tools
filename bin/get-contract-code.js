@@ -9,7 +9,7 @@ import chalk from 'chalk';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY, displayChain } from '../lib/config-utils.js';
-import { createDirWithFallback, mkDirAndWriteFile, sliceOffFirstDirectory, getFilesRecursively, getSourceFilesFromAddress } from '../lib/file-utils.js';
+import { getFilesRecursively, getSourceFilesFromAddress } from '../lib/file-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
