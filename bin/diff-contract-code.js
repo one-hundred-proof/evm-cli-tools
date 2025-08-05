@@ -15,27 +15,28 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Setup command line arguments with yargs
-const yargsInstance = setupYargs(yargs(hideBin(process.argv)), 
-  `${chalk.bold('Usage:')} $0 [options] <address1> <address2> [word-level-diff]`)
-  .positional('address1', {
-    describe: chalk.cyan('First contract address to compare'),
-    type: 'string',
-    demandOption: true
+const yargsInstance = setupYargs(yargs(hideBin(process.argv)))
+  .command('$0 [options] <address1> <address2> [word-level-diff]', "", (yargs) => {
+    yargs.positional('address1', {
+      describe: chalk.cyan('First contract address to compare'),
+      type: 'string',
+      demandOption: true
+    })
+    .positional('address2', {
+      describe: chalk.cyan('Second contract address to compare'),
+      type: 'string',
+      demandOption: true
+    })
+    .positional('word-level-diff', {
+      describe: chalk.cyan('Use word-level diff (true/false)'),
+      type: 'string',
+      default: 'true'
+    })
+    .example('$0 0x1234... 0x5678...', `${chalk.green('Compare contracts with word-level diff')}`)
+    .example('$0 --chain polygon 0x1234... 0x5678... false', `${chalk.green('Compare contracts on Polygon with line-level diff')}`)
   })
-  .positional('address2', {
-    describe: chalk.cyan('Second contract address to compare'),
-    type: 'string',
-    demandOption: true
-  })
-  .positional('word-level-diff', {
-    describe: chalk.cyan('Use word-level diff (true/false)'),
-    type: 'string',
-    default: 'true'
-  })
-  .example('$0 0x1234... 0x5678...', `${chalk.green('Compare contracts with word-level diff')}`)
-  .example('$0 --chain polygon 0x1234... 0x5678... false', `${chalk.green('Compare contracts on Polygon with line-level diff')}`);
 
-const argv = yargsInstance.argv;
+const argv = yargsInstance.parse();
 
 // Get chain configuration
 const chainConfig = getCurrentChainConfig(argv);

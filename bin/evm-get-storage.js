@@ -6,34 +6,36 @@ import { fileURLToPath } from 'url';
 import fetch from 'node-fetch';
 import chalk from 'chalk';
 import yargs from 'yargs';
-import { hideBin } from 'yargs/helpers';
 import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY } from '../lib/config-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Setup command line arguments with yargs
-const yargsInstance = setupYargs(yargs(hideBin(process.argv)), 
-  `${chalk.bold('Usage:')} $0 [options] <contract-address> <storage-slot> [block]`)
-  .positional('contract-address', {
-    describe: chalk.cyan('Contract address to query storage from'),
-    type: 'string',
-    demandOption: true
-  })
-  .positional('storage-slot', {
-    describe: chalk.cyan('Storage slot to query (hex or decimal)'),
-    type: 'string',
-    demandOption: true
-  })
-  .positional('block', {
-    describe: chalk.cyan('Block number or "latest"'),
-    type: 'string',
-    default: 'latest'
-  })
-  .example('$0 0x1234... 0', `${chalk.green('Get storage at slot 0')}`)
-  .example('$0 --chain polygon 0x1234... 0x1 1000000', `${chalk.green('Get storage at slot 0x1 at block 1000000 on Polygon')}`);
+const yargsInstance = setupYargs(yargs(process.argv.slice(2)))
+  .command('$0 <contract> <slot> [block]', "2", (yargs) => {
+    yargs.positional('contract', {
+      describe: chalk.cyan('Contract address to query storage from'),
+      type: 'string',
+      demandOption: true
+    })
+    .positional('slot', {
+      describe: chalk.cyan('Storage slot to query (hex or decimal)'),
+      type: 'string',
+      demandOption: true
+    })
+    .positional('block', {
+      describe: chalk.cyan('Block number or "latest"'),
+      type: 'string',
+      default: 'latest'
+    })
+    .example('$0 0x1234... 0', `${chalk.green('Get storage at slot 0')}`)
+    .example('$0 --chain polygon 0x1234... 0x1 1000000', `${chalk.green('Get storage at slot 0x1 at block 1000000 on Polygon')}`)
+})
 
-const argv = yargsInstance.argv;
+
+// Get positional arguments
+const argv = yargsInstance.parse();
 
 // Get chain configuration
 const chainConfig = getCurrentChainConfig(argv);
@@ -46,24 +48,20 @@ if (!api_key) {
 
 const rpcPrefix = prefix || "https://mainnet.infura.io/v3";
 
-// Get positional arguments
-const contract = argv._[0];
-const slot = argv._[1];
-const block = argv._[2] || 'latest';
 
-if (!contract || slot === undefined) {
+if (!argv.contract || argv.slot === undefined) {
   console.error(chalk.red('Missing required arguments'));
   yargsInstance.showHelp();
   process.exit(1);
 }
 
-console.log(chalk.blue(`Storage at slot ${chalk.bold(slot)}:`));
+console.log(chalk.blue(`Storage at slot ${chalk.bold(argv.slot)}:`));
 
 const url = `${rpcPrefix}/${api_key}`;
 const body = {
   jsonrpc: "2.0",
   method: "eth_getStorageAt",
-  params: [contract, slot, block],
+  params: [ argv.contract, argv.slot, argv.block],
   id: 1
 };
 
