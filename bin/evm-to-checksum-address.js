@@ -9,7 +9,7 @@ import { hideBin } from 'yargs/helpers';
 import { setupYargs } from '../lib/config-utils.js';
 
 const yargsInstance = setupYargs(yargs(hideBin(process.argv)))
-  .command('$0 <addresses...>', "", (yargs) => {
+  .command('$0 <addresses...> [options...]', "", (yargs) => {
     yargs.positional('addresses', {
       describe: chalk.cyan('Ethereum address(es) to convert to checksum format'),
       type: 'string',
