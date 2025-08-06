@@ -7,6 +7,7 @@ import fetch from 'node-fetch';
 import chalk from 'chalk';
 import yargs from 'yargs';
 import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY, displayChain } from '../lib/config-utils.js';
+import { formatBytes32 } from '../lib/format-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -77,22 +78,6 @@ const body = {
   id: 1
 };
 
-// Function to format the result based on the specified type
-function formatResult(result, type) {
-  if (!result) return result;
-  
-  switch (type) {
-    case 'decimal':
-      return BigInt(result).toString(10);
-    case 'address':
-      // Take the last 40 characters (20 bytes) and add 0x prefix
-      return '0x' + result.slice(-40).padStart(40, '0');
-    case 'hex':
-    default:
-      return result;
-  }
-}
-
 fetch(url, {
   method: 'POST',
   headers: {
@@ -102,7 +87,7 @@ fetch(url, {
 })
   .then(response => response.json())
   .then(data => {
-    const formattedResult = formatResult(data.result, argv.type);
+    const formattedResult = formatBytes32(data.result, argv.type);
     console.log(formattedResult);
   })
   .catch(error => {
