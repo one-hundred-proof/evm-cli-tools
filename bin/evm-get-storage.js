@@ -85,7 +85,7 @@ if (argv.mapKey) {
   try {
     const parsedKey = parseSolidityExpression(argv.mapKey);
     console.error(chalk.blue(`Using key type: ${chalk.bold(parsedKey.type)}`));
-    
+
     slotToQuery = encodeStorageSlot(argv.slot, argv.mapKey);
     console.error(chalk.blue(`Encoded slot: ${chalk.bold(slotToQuery)}`));
   } catch (error) {
@@ -94,7 +94,7 @@ if (argv.mapKey) {
   }
 }
 
-console.log(chalk.blue(`Storage at slot ${chalk.bold(argv.mapKey ? argv.slot + ' with key ' + argv.mapKey : argv.slot)}:`));
+console.log(chalk.blue(`Storage at slot ${argv.mapKey ? chalk.bold(argv.slot) + ' with key ' + chalk.bold(argv.mapKey) : chalk.bold(argv.slot)}:`));
 
 const url = `${rpcPrefix}/${apiKey}`;
 const body = {
