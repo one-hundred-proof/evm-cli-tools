@@ -6,8 +6,10 @@ import { fileURLToPath } from 'url';
 import fetch from 'node-fetch';
 import chalk from 'chalk';
 import yargs from 'yargs';
+import web3 from 'web3';
 import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY, displayChain } from '../lib/config-utils.js';
 import { formatBytes32 } from '../lib/format-utils.js';
+import { parseSolidityExpression, encodeStorageSlot } from '../lib/solidity-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,10 +39,17 @@ const yargsInstance = setupYargs(yargs(process.argv.slice(2)))
       default: 'hex',
       choices: ['h', 'hex', 'd', 'decimal', 'a', 'address']
     })
+    .option('k', {
+      alias: 'map-key',
+      describe: chalk.cyan('Mapping key to encode with the slot (supports value expressions like address(0x...), bytes32(0x...), etc)'),
+      type: 'string'
+    })
     .example('$0 0x1234... 0', `${chalk.green('Get storage at slot 0')}`)
     .example('$0 --chain polygon 0x1234... 0x1 1000000', `${chalk.green('Get storage at slot 0x1 at block 1000000 on Polygon')}`)
     .example('$0 0x1234... 0 --type decimal', `${chalk.green('Get storage at slot 0 and convert to decimal')}`)
     .example('$0 0x1234... 0 -t address', `${chalk.green('Get storage at slot 0 and format as address')}`)
+    .example('$0 0x1234... 0 --map-key 123', `${chalk.green('Get storage for mapping at slot 0 with key 123 (treated as uint256)')}`)
+    .example('$0 0x1234... 0 -k "address(0x1234...)"', `${chalk.green('Get storage for mapping at slot 0 with address key')}`)
 })
 
 
@@ -68,13 +77,30 @@ if (!argv.contract || !argv.slot) {
   process.exit(1);
 }
 
-console.log(chalk.blue(`Storage at slot ${chalk.bold(argv.slot)}:`));
+// Determine the slot to query
+let slotToQuery = argv.slot;
+
+// If a mapping key is provided, encode the slot with the key
+if (argv.mapKey) {
+  try {
+    const parsedKey = parseSolidityExpression(argv.mapKey);
+    console.error(chalk.blue(`Using key type: ${chalk.bold(parsedKey.type)}`));
+    
+    slotToQuery = encodeStorageSlot(argv.slot, argv.mapKey);
+    console.error(chalk.blue(`Encoded slot: ${chalk.bold(slotToQuery)}`));
+  } catch (error) {
+    console.error(chalk.red(`Error parsing mapping key: ${error.message}`));
+    process.exit(1);
+  }
+}
+
+console.log(chalk.blue(`Storage at slot ${chalk.bold(argv.mapKey ? argv.slot + ' with key ' + argv.mapKey : argv.slot)}:`));
 
 const url = `${rpcPrefix}/${apiKey}`;
 const body = {
   jsonrpc: "2.0",
   method: "eth_getStorageAt",
-  params: [ argv.contract, argv.slot, argv.block],
+  params: [ argv.contract, slotToQuery, argv.block],
   id: 1
 };
 
