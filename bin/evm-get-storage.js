@@ -52,7 +52,7 @@ if (!apiKey) {
 const rpcPrefix = prefix || "https://mainnet.infura.io/v3";
 
 
-if (!argv.contract || argv.slot === undefined) {
+if (!argv.contract || !argv.slot) {
   console.error(chalk.red('Missing required arguments'));
   yargsInstance.showHelp();
   process.exit(1);
@@ -79,5 +79,6 @@ fetch(url, {
   .then(data => console.log(data.result))
   .catch(error => {
     console.error('Error fetching storage:', error);
+    console.error(chalk.red(`Have you configered your RPC endpoint correctly in ${CONFIG_PATH_DISPLAY}?`));
     process.exit(1);
   });
