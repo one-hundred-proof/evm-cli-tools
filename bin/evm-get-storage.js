@@ -29,8 +29,17 @@ const yargsInstance = setupYargs(yargs(process.argv.slice(2)))
       type: 'string',
       default: 'latest'
     })
+    .option('t', {
+      alias: 'type',
+      describe: chalk.cyan('Output format type (hex, decimal, address)'),
+      type: 'string',
+      default: 'hex',
+      choices: ['hex', 'decimal', 'address']
+    })
     .example('$0 0x1234... 0', `${chalk.green('Get storage at slot 0')}`)
     .example('$0 --chain polygon 0x1234... 0x1 1000000', `${chalk.green('Get storage at slot 0x1 at block 1000000 on Polygon')}`)
+    .example('$0 0x1234... 0 --type decimal', `${chalk.green('Get storage at slot 0 and convert to decimal')}`)
+    .example('$0 0x1234... 0 -t address', `${chalk.green('Get storage at slot 0 and format as address')}`)
 })
 
 
@@ -68,6 +77,22 @@ const body = {
   id: 1
 };
 
+// Function to format the result based on the specified type
+function formatResult(result, type) {
+  if (!result) return result;
+  
+  switch (type) {
+    case 'decimal':
+      return BigInt(result).toString(10);
+    case 'address':
+      // Take the last 40 characters (20 bytes) and add 0x prefix
+      return '0x' + result.slice(-40).padStart(40, '0');
+    case 'hex':
+    default:
+      return result;
+  }
+}
+
 fetch(url, {
   method: 'POST',
   headers: {
@@ -76,7 +101,10 @@ fetch(url, {
   body: JSON.stringify(body)
 })
   .then(response => response.json())
-  .then(data => console.log(data.result))
+  .then(data => {
+    const formattedResult = formatResult(data.result, argv.type);
+    console.log(formattedResult);
+  })
   .catch(error => {
     console.error('Error fetching storage:', error);
     console.error(chalk.red(`Have you configered your RPC endpoint correctly in ${CONFIG_PATH_DISPLAY}?`));
