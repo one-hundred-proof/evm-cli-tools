@@ -7,7 +7,7 @@ import { hideBin } from 'yargs/helpers';
 import { setupYargs, CONFIG_PATH_DISPLAY }  from '../lib/config-utils.js';
 
 const yargsInstance = setupYargs(yargs(hideBin(process.argv)),
-  `${chalk.bold('Usage:')} $0 [options] <string>...`)
+  `${chalk.bold('Usage:')} $0 <string>... [options...]`)
   .positional('string', {
     describe: chalk.cyan('String(s) to hash with keccak256'),
     type: 'string',

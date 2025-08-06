@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 
 // Setup command line arguments with yargs
 const yargsInstance = setupYargs(yargs(process.argv.slice(2)))
-  .command('$0 [options] <contract> <slot> [block]', "2", (yargs) => {
+  .command('$0 <contract> <slot> [block] [options...]', "2", (yargs) => {
     yargs.positional('contract', {
       describe: chalk.cyan('Contract address to query storage from'),
       type: 'string',

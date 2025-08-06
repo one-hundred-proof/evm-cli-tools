@@ -25,7 +25,7 @@ function formatLargeNumber(num, decimals = 18) {
 
 // CLI support with yargs
 const yargsInstance = setupYargs(yargs(hideBin(process.argv)))
-    .command('$0 <number> [decimals]', "", (yargs => {
+    .command('$0 <number> [decimals] [options...]', "", (yargs => {
         yargs.positional('number', {
             describe: chalk.cyan('Large number to format (can be in hex or decimal)'),
             type: 'string',
