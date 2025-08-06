@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 
 // Setup command line arguments with yargs
 const yargsInstance = setupYargs(yargs(hideBin(process.argv)))
-  .command('$0 <address>', "Get contract code for an address", (yargs) => {
+  .command('$0 <address> [options...]', "Get contract code for an address", (yargs) => {
     yargs.positional('address', {
       describe: chalk.cyan('Contract address to get source code for'),
       type: 'string',

@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
 
 // Setup command line arguments with yargs
 const yargsInstance = setupYargs(yargs(hideBin(process.argv)))
-  .command('$0 <address1> <address2> [word-level-diff]', "Do a file by file diff between two contract addresses", (yargs) => {
+  .command('$0 <address1> <address2> [word-level-diff] [options...]', "Do a file by file diff between two contract addresses", (yargs) => {
     yargs.positional('address1', {
       describe: chalk.cyan('First contract address to compare'),
       type: 'string',

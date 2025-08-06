@@ -8,7 +8,7 @@ import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY, displayChain } 
 
 // Setup command line arguments with yargs
 const yargsInstance = setupYargs(yargs(hideBin(process.argv)))
-  .command('$0 <address> <topic> [from-block] [to-block]', "", (yargs => {
+  .command('$0 <address> <topic> [from-block] [to-block] [options...]', "", (yargs => {
     yargs.positional('address', {
       describe: chalk.cyan('Contract address to get logs for'),
       type: 'string',
