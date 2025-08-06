@@ -35,7 +35,7 @@ const yargsInstance = setupYargs(yargs(process.argv.slice(2)))
       describe: chalk.cyan('Output format type (hex, decimal, address)'),
       type: 'string',
       default: 'hex',
-      choices: ['hex', 'decimal', 'address']
+      choices: ['h', 'hex', 'd', 'decimal', 'a', 'address']
     })
     .example('$0 0x1234... 0', `${chalk.green('Get storage at slot 0')}`)
     .example('$0 --chain polygon 0x1234... 0x1 1000000', `${chalk.green('Get storage at slot 0x1 at block 1000000 on Polygon')}`)
@@ -87,7 +87,9 @@ fetch(url, {
 })
   .then(response => response.json())
   .then(data => {
-    const formattedResult = formatBytes32(data.result, argv.type);
+    let choiceHash = { "h": "hex", "d": "decimal", "a": "address"};
+    let typ = choiceHash[argv.type] ? choiceHash[argv.type] : argv.type
+    const formattedResult = formatBytes32(data.result, typ);
     console.log(formattedResult);
   })
   .catch(error => {
