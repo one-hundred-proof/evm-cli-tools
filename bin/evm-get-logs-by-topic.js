@@ -8,7 +8,7 @@ import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY, displayChain } 
 
 // Setup command line arguments with yargs
 const yargsInstance = setupYargs(yargs(hideBin(process.argv)))
-  .command('$0 [options] <address> <topic> [from-block] [to-block]', "", (yargs => {
+  .command('$0 <address> <topic> [from-block] [to-block]', "", (yargs => {
     yargs.positional('address', {
       describe: chalk.cyan('Contract address to get logs for'),
       type: 'string',
@@ -42,7 +42,7 @@ const argv = yargsInstance.parse();
 
 // Get chain configuration
 const chainConfig = getCurrentChainConfig(argv);
-const { chainName, "scan-api-key": scanApiKey, "scan-api-domain": scanApiDomain } = chainConfig;
+const { chainName, "scan-api-key": scanApiKey, "scan-api-domain": scanApiDomain, "chain-id": chainId } = chainConfig;
 
 // Display which chain we're using
 displayChain(chainName);
@@ -57,19 +57,13 @@ if (!scanApiDomain) {
   process.exit(1);
 }
 
-// Get positional arguments
-const address = argv._[0];
-const topic = argv._[1];
-const fromBlock = argv._[2] || '1';
-const toBlock = argv._[3] || 'latest';
-
-if (!address || !topic) {
+if (!argv.address || !argv.topic) {
   console.error(chalk.red('Missing required arguments'));
   yargsInstance.showHelp();
   process.exit(1);
 }
 
-const url = `https://${scanApiDomain}/api?module=logs&action=getLogs&address=${address}&fromBlock=${fromBlock}&toBlock=${toBlock}&apikey=${scanApiKey}&topic0=${topic}`;
+const url = `https://${scanApiDomain}/v2/api?chainid=${chainId}&module=logs&action=getLogs&address=${argv.address}&fromBlock=${argv.fromBlock}&toBlock=${argv.toBlock}&apikey=${scanApiKey}&topic0=${argv.topic}`;
 
 fetch(url)
   .then(response => response.json())
@@ -80,7 +74,7 @@ fetch(url)
     }
 
     if (argv.pretty) {
-      console.log(chalk.green(`Found ${data.result.length} logs with topic ${chalk.cyan(topic)}:`));
+      console.error(chalk.green(`Found ${data.result.length} logs with topic ${chalk.cyan(argv.topic)}:`));
       console.log(JSON.stringify(data.result, null, 2));
     } else {
       console.log(JSON.stringify(data.result));
