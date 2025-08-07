@@ -41,8 +41,9 @@ const yargsInstance = setupYargs(yargs(process.argv.slice(2)))
     })
     .option('k', {
       alias: 'map-key',
-      describe: chalk.cyan('Mapping key to encode with the slot (supports value expressions like address(0x...), bytes32(0x...), etc)'),
-      type: 'string'
+      describe: chalk.cyan('Mapping key to encode with the slot (can be used multiple times for nested mappings)'),
+      type: 'string',
+      array: true
     })
     .example('$0 0x1234... 0', `${chalk.green('Get storage at slot 0')}`)
     .example('$0 --chain polygon 0x1234... 0x1 1000000', `${chalk.green('Get storage at slot 0x1 at block 1000000 on Polygon')}`)
@@ -50,6 +51,7 @@ const yargsInstance = setupYargs(yargs(process.argv.slice(2)))
     .example('$0 0x1234... 0 -t address', `${chalk.green('Get storage at slot 0 and format as address')}`)
     .example('$0 0x1234... 0 --map-key 123', `${chalk.green('Get storage for mapping at slot 0 with key 123 (treated as uint256)')}`)
     .example('$0 0x1234... 0 -k "address(0x1234...)"', `${chalk.green('Get storage for mapping at slot 0 with address key')}`)
+    .example('$0 0x1234... 0 -k "address(0x1234...)" -k 123', `${chalk.green('Get storage for nested mapping at slot 0 with address and uint256 keys')}`)
 })
 
 
@@ -80,21 +82,30 @@ if (!argv.contract || !argv.slot) {
 // Determine the slot to query
 let slotToQuery = argv.slot;
 
-// If a mapping key is provided, encode the slot with the key
-if (argv.mapKey) {
+// If mapping keys are provided, encode the slot with the keys
+if (argv.mapKey && argv.mapKey.length > 0) {
   try {
-    const parsedKey = parseSolidityExpression(argv.mapKey);
-    console.error(chalk.blue(`Using key type: ${chalk.bold(parsedKey.type)}`));
-
-    slotToQuery = encodeStorageSlot(argv.slot, argv.mapKey);
-    console.error(chalk.blue(`Encoded slot: ${chalk.bold(slotToQuery)}`));
+    // Process each key in sequence, using the result of each encoding as the slot for the next
+    for (let i = 0; i < argv.mapKey.length; i++) {
+      const key = argv.mapKey[i];
+      const parsedKey = parseSolidityExpression(key);
+      console.error(chalk.blue(`Using key ${i+1} type: ${chalk.bold(parsedKey.type)}`));
+      
+      slotToQuery = encodeStorageSlot(slotToQuery, key);
+      console.error(chalk.blue(`Encoded slot after key ${i+1}: ${chalk.bold(slotToQuery)}`));
+    }
   } catch (error) {
     console.error(chalk.red(`Error parsing mapping key: ${error.message}`));
     process.exit(1);
   }
 }
 
-console.log(chalk.blue(`Storage at slot ${argv.mapKey ? chalk.bold(argv.slot) + ' with key ' + chalk.bold(argv.mapKey) : chalk.bold(argv.slot)}:`));
+// Format the keys for display
+const keysDisplay = argv.mapKey && argv.mapKey.length > 0 
+  ? ' with keys ' + argv.mapKey.map(k => chalk.bold(k)).join(', ') 
+  : '';
+
+console.log(chalk.blue(`Storage at slot ${chalk.bold(argv.slot)}${keysDisplay}:`));
 
 const url = `${rpcPrefix}/${apiKey}`;
 const body = {

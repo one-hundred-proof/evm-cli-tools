@@ -176,16 +176,17 @@ evm-get-storage 0xContractAddress 5 --map-key "address(0x1234...)"
 
 **Nested Mappings:**
 
-For nested mappings like `mapping(address => mapping(uint256 => uint256))`, you need to perform multiple lookups:
+For nested mappings like `mapping(address => mapping(uint256 => uint256))`, you can use multiple `--map-key` flags:
 
 ```bash
-# First, find the slot for the first level mapping
-evm-get-storage 0xContract 5 --map-key "address(0x1234...)"
-# Let's say this returns 0xabcd...
-
-# Then use that result as the slot for the second level
-evm-get-storage 0xContract 0xabcd... --map-key 123
+# Query a nested mapping with multiple keys in one command
+evm-get-storage 0xContract 5 --map-key "address(0x1234...)" --map-key 123
 ```
+
+The tool will:
+1. Encode the first key with the base slot (5)
+2. Use the result as the slot for encoding with the second key
+3. And so on for any additional levels of nesting
 
 ### `evm-get-logs-by-topic`
 
