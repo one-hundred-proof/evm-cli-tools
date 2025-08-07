@@ -164,26 +164,19 @@ const fetchSlot = async (slot) => {
       } else {
         // For subsequent slots, we need to calculate based on the base slot + i
         if (argv.mapKey && argv.mapKey.length > 0) {
-          // For mappings, we need to recalculate with the incremented slot
-          let baseSlot;
-          if (argv.slot.startsWith('0x')) {
+          // For mappings with keys, we need to increment the final slot
+          // This is different from incrementing the base slot and recalculating
+          if (slotToQuery.startsWith('0x')) {
             // Handle hex slots
-            baseSlot = BigInt(argv.slot) + BigInt(i);
-            baseSlot = '0x' + baseSlot.toString(16);
+            currentSlot = BigInt(slotToQuery) + BigInt(i);
+            currentSlot = '0x' + currentSlot.toString(16);
           } else {
             // Handle decimal slots
-            baseSlot = BigInt(argv.slot) + BigInt(i);
-            baseSlot = baseSlot.toString();
+            currentSlot = BigInt(slotToQuery) + BigInt(i);
+            currentSlot = currentSlot.toString();
           }
-          
-          // Recalculate the slot with mapping keys
-          let tempSlot = baseSlot;
-          for (let j = 0; j < argv.mapKey.length; j++) {
-            tempSlot = encodeStorageSlot(tempSlot, argv.mapKey[j]);
-          }
-          currentSlot = tempSlot;
         } else {
-          // For regular slots, just add i to the original slot (in hex)
+          // For regular slots, just add i to the original slot
           if (slotToQuery.startsWith('0x')) {
             // Handle hex slots
             currentSlot = BigInt(slotToQuery) + BigInt(i);

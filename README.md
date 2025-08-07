@@ -120,7 +120,12 @@ evm-get-storage 0x1234abcd... 0 --map-key "address(0x1234...)"
 
 # Get storage for 5 contiguous slots starting at slot 0
 evm-get-storage 0x1234abcd... 0 --num 5
+
+# Get storage for 3 contiguous slots from a mapping (increments the final computed slot)
+evm-get-storage 0x1234abcd... 0 --map-key "address(0x1234...)" --num 3
 ```
+
+Note: When using `--num` with `--map-key`, the tool increments the final computed slot, not the base slot before applying the mapping key.
 
 #### Solidity Expression Parser for Mapping Keys
 
