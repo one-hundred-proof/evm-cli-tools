@@ -163,6 +163,7 @@ const fetchSlot = async (slot) => {
   try {
     let choiceHash = { "h": "hex", "d": "decimal", "a": "address"};
     let typ = choiceHash[argv.type] ? choiceHash[argv.type] : argv.type;
+    console.error(chalk.blue(`Output format: ${chalk.bold(typ)}`));
 
     for (let i = 0; i < numSlots; i++) {
       // Calculate the current slot
