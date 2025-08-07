@@ -97,7 +97,7 @@ if (argv.mapKey && argv.mapKey.length > 0) {
       const key = argv.mapKey[i];
       const parsedKey = parseSolidityExpression(key);
       console.error(chalk.blue(`Using key ${i+1} type: ${chalk.bold(parsedKey.type)}`));
-      
+
       slotToQuery = encodeStorageSlot(slotToQuery, key);
       console.error(chalk.blue(`Encoded slot after key ${i+1}: ${chalk.bold(slotToQuery)}`));
     }
@@ -108,8 +108,8 @@ if (argv.mapKey && argv.mapKey.length > 0) {
 }
 
 // Format the keys for display
-const keysDisplay = argv.mapKey && argv.mapKey.length > 0 
-  ? ' with keys ' + argv.mapKey.map(k => chalk.bold(k)).join(', ') 
+const keysDisplay = argv.mapKey && argv.mapKey.length > 0
+  ? ' with keys ' + argv.mapKey.map(k => chalk.bold(k)).join(', ')
   : '';
 
 // Determine how many slots to query
@@ -154,7 +154,7 @@ const fetchSlot = async (slot) => {
   try {
     let choiceHash = { "h": "hex", "d": "decimal", "a": "address"};
     let typ = choiceHash[argv.type] ? choiceHash[argv.type] : argv.type;
-    
+
     for (let i = 0; i < numSlots; i++) {
       // Calculate the current slot
       let currentSlot;
@@ -167,11 +167,11 @@ const fetchSlot = async (slot) => {
         const slotBigInt = BigInt(slotToQuery) + BigInt(i);
         currentSlot = '0x' + slotBigInt.toString(16).padStart(64, '0');
       }
-      
+
       // Fetch and display the slot
       const result = await fetchSlot(currentSlot);
       const formattedResult = formatBytes32(result, typ);
-      
+
       if (numSlots > 1) {
         // For multiple slots, always show the full bytes32 slot value
         console.log(`${chalk.cyan(`Slot ${chalk.bold(currentSlot)}:`)} ${formattedResult}`);
