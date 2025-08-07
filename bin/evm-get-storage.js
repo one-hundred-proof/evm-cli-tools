@@ -88,8 +88,12 @@ if (!argv.contract || !argv.slot) {
 }
 
 // Use blockHeight option instead of positional block argument
-const blockHeight = argv.blockHeight || 'latest';
-console.error("blockheight", blockHeight);
+let blockHeight = argv.blockHeight || 'latest';
+
+// Convert block height to hex if it's a number
+if (blockHeight !== 'latest' && blockHeight !== 'pending' && blockHeight !== 'earliest') {
+  blockHeight = '0x' + parseInt(blockHeight).toString(16);
+}
 
 // Parse the slot to bytes32 format
 let slotToQuery = parseSlotToBytes32(argv.slot);
@@ -137,7 +141,6 @@ const fetchSlot = async (slot) => {
     id: 1
   };
 
-  console.error("body", body);
   try {
     const response = await fetch(url, {
       method: 'POST',
