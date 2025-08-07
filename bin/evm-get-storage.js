@@ -163,30 +163,9 @@ const fetchSlot = async (slot) => {
         currentSlot = slotToQuery;
       } else {
         // For subsequent slots, we need to calculate based on the base slot + i
-        if (argv.mapKey && argv.mapKey.length > 0) {
-          // For mappings with keys, we need to increment the final slot
-          // This is different from incrementing the base slot and recalculating
-          if (slotToQuery.startsWith('0x')) {
-            // Handle hex slots
-            currentSlot = BigInt(slotToQuery) + BigInt(i);
-            currentSlot = '0x' + currentSlot.toString(16);
-          } else {
-            // Handle decimal slots
-            currentSlot = BigInt(slotToQuery) + BigInt(i);
-            currentSlot = currentSlot.toString();
-          }
-        } else {
-          // For regular slots, just add i to the original slot
-          if (slotToQuery.startsWith('0x')) {
-            // Handle hex slots
-            currentSlot = BigInt(slotToQuery) + BigInt(i);
-            currentSlot = '0x' + currentSlot.toString(16);
-          } else {
-            // Handle decimal slots
-            currentSlot = BigInt(slotToQuery) + BigInt(i);
-            currentSlot = currentSlot.toString();
-          }
-        }
+        // Always use hex format for display consistency
+        const slotBigInt = BigInt(slotToQuery) + BigInt(i);
+        currentSlot = '0x' + slotBigInt.toString(16).padStart(64, '0');
       }
       
       // Fetch and display the slot
@@ -194,7 +173,7 @@ const fetchSlot = async (slot) => {
       const formattedResult = formatBytes32(result, typ);
       
       if (numSlots > 1) {
-        // For multiple slots, show the full bytes32 slot value
+        // For multiple slots, always show the full bytes32 slot value
         console.log(`${chalk.cyan(`Slot ${chalk.bold(currentSlot)}:`)} ${formattedResult}`);
       } else {
         // For a single slot, just show the result
