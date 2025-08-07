@@ -26,3 +26,6 @@ TMPFILE=$(mktemp "get-contract-code-XXXXX.out")
 CONTRACT_DIR=$(cat $TMPFILE | grep 'Files saved' | sed 's/Files saved in//' | xargs echo)
 rm -rf "$CONTRACT_DIR" "$TMPFILE"
 
+echo -e "\n${BRIGHT_MAGENTA}[+] evm-get-storage${RESET}"
+./evm-get-storage.js --chain base 0xeb8A7B0184373550DCAa79156812F5d33e998C1E 20 -k "address(0x40461291347e1eCbb09499F3371D3f17f10d7159)"
+
