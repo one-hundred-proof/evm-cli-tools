@@ -27,7 +27,7 @@ const yargsInstance = setupYargs(yargs(process.argv.slice(2)))
       type: 'string',
       demandOption: true
     })
-    .option('h', {
+    .option('b', {
       alias: 'block-height',
       describe: chalk.cyan('Block number or "latest"'),
       type: 'string',
@@ -89,6 +89,7 @@ if (!argv.contract || !argv.slot) {
 
 // Use blockHeight option instead of positional block argument
 const blockHeight = argv.blockHeight || 'latest';
+console.error("blockheight", blockHeight);
 
 // Parse the slot to bytes32 format
 let slotToQuery = parseSlotToBytes32(argv.slot);
@@ -136,6 +137,7 @@ const fetchSlot = async (slot) => {
     id: 1
   };
 
+  console.error("body", body);
   try {
     const response = await fetch(url, {
       method: 'POST',
