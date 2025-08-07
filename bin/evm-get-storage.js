@@ -9,7 +9,7 @@ import yargs from 'yargs';
 import web3 from 'web3';
 import { getCurrentChainConfig, setupYargs, CONFIG_PATH_DISPLAY, displayChain } from '../lib/config-utils.js';
 import { formatBytes32 } from '../lib/format-utils.js';
-import { parseSolidityExpression, encodeStorageSlot } from '../lib/solidity-utils.js';
+import { parseSolidityExpression, encodeStorageSlot, parseSlotToBytes32, incrementBytes32HexStr } from '../lib/solidity-utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -86,8 +86,8 @@ if (!argv.contract || !argv.slot) {
   process.exit(1);
 }
 
-// Determine the slot to query
-let slotToQuery = argv.slot;
+// Parse the slot to bytes32 format
+let slotToQuery = parseSlotToBytes32(argv.slot);
 
 // If mapping keys are provided, encode the slot with the keys
 if (argv.mapKey && argv.mapKey.length > 0) {
@@ -162,10 +162,8 @@ const fetchSlot = async (slot) => {
         // First slot is the one we already calculated
         currentSlot = slotToQuery;
       } else {
-        // For subsequent slots, we need to calculate based on the base slot + i
-        // Always use hex format for display consistency
-        const slotBigInt = BigInt(slotToQuery) + BigInt(i);
-        currentSlot = '0x' + slotBigInt.toString(16).padStart(64, '0');
+        // For subsequent slots, increment the slot
+        currentSlot = incrementBytes32HexStr(slotToQuery, i);
       }
 
       // Fetch and display the slot
