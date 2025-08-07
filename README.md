@@ -100,10 +100,91 @@ $ evm-get-storage <contract> <slot> [block]
 - `contract`: Contract address to query storage from
 - `slot`: Storage slot to query (hex or decimal)
 - `block`: Block number or "latest" (defaults to "latest")
+- `--type, -t`: Output format type (hex, decimal, address)
+- `--map-key, -k`: Mapping key to encode with the slot (supports value expressions)
 
-**Example:**
+**Examples:**
 ```bash
+# Get storage at slot 0
 evm-get-storage 0x1234abcd... 0 latest
+
+# Get storage at slot 0 and convert to decimal
+evm-get-storage 0x1234abcd... 0 --type decimal
+
+# Get storage for mapping at slot 0 with key 123 (treated as uint256)
+evm-get-storage 0x1234abcd... 0 --map-key 123
+
+# Get storage for mapping at slot 0 with address key
+evm-get-storage 0x1234abcd... 0 --map-key "address(0x1234...)"
+```
+
+#### Solidity Expression Parser for Mapping Keys
+
+The `--map-key` option supports Solidity-style expressions for specifying mapping keys. This allows you to query storage slots that correspond to mappings in Solidity contracts.
+
+**Supported Expression Formats:**
+
+1. **Plain Values** (treated as uint256):
+   ```
+   123
+   0x123abc
+   ```
+
+2. **Typed Values**:
+   ```
+   uint256(123)
+   int256(-10)
+   address(0x1234...)
+   bytes32(0x1234...)
+   bool(true)
+   string("Hello World")
+   ```
+
+**Type Handling:**
+
+Each type is handled differently when encoding for storage:
+
+- **uint256/uint**: Padded to 32 bytes (64 hex characters)
+- **int256/int**: Converted to hex and padded to 32 bytes
+- **address**: Lowercase and padded to 32 bytes
+- **bytes32**: Ensured to have proper 32-byte padding
+- **bool**: Converted to 1 (true) or 0 (false) and padded
+- **string**: Converted to hex representation of ASCII bytes without padding
+
+**String Values:**
+
+String values must be enclosed in double quotes within the expression:
+
+```bash
+evm-get-storage 0x1234... 0 --map-key 'string("Hello World")'
+```
+
+**How Mapping Keys Work:**
+
+In Solidity, mapping storage slots are calculated using the keccak256 hash function:
+
+1. The key is converted to a bytes32 value according to its type
+2. The storage slot number is converted to bytes32
+3. These values are concatenated (key + slot)
+4. The keccak256 hash of this concatenation gives the actual storage slot
+
+For example, to access `myMapping[0x1234...]` at slot 5:
+
+```bash
+evm-get-storage 0xContractAddress 5 --map-key "address(0x1234...)"
+```
+
+**Nested Mappings:**
+
+For nested mappings like `mapping(address => mapping(uint256 => uint256))`, you need to perform multiple lookups:
+
+```bash
+# First, find the slot for the first level mapping
+evm-get-storage 0xContract 5 --map-key "address(0x1234...)"
+# Let's say this returns 0xabcd...
+
+# Then use that result as the slot for the second level
+evm-get-storage 0xContract 0xabcd... --map-key 123
 ```
 
 ### `evm-get-logs-by-topic`
