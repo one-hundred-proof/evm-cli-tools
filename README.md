@@ -93,13 +93,13 @@ The tool will download all source files and save them to a directory named after
 Query the storage at a specific slot in a contract.
 
 ```bash
-$ evm-get-storage <contract> <slot> [block]
+$ evm-get-storage <contract> <slot> [options]
 ```
 
 **Options:**
 - `contract`: Contract address to query storage from
 - `slot`: Storage slot to query (hex or decimal)
-- `block`: Block number or "latest" (defaults to "latest")
+- `--block-height, -h`: Block number or "latest" (defaults to "latest")
 - `--type, -t`: Output format type (hex, decimal, address)
 - `--map-key, -k`: Mapping key to encode with the slot (supports value expressions)
 - `--num, -n`: Number of contiguous slots to show (defaults to 1)
@@ -107,7 +107,10 @@ $ evm-get-storage <contract> <slot> [block]
 **Examples:**
 ```bash
 # Get storage at slot 0
-evm-get-storage 0x1234abcd... 0 latest
+evm-get-storage 0x1234abcd... 0
+
+# Get storage at slot 0 at block 1000000
+evm-get-storage 0x1234abcd... 0 --block-height 1000000
 
 # Get storage at slot 0 and convert to decimal
 evm-get-storage 0x1234abcd... 0 --type decimal

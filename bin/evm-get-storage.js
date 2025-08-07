@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename);
 
 // Setup command line arguments with yargs
 const yargsInstance = setupYargs(yargs(process.argv.slice(2)))
-  .command('$0 <contract> <slot> [block] [options...]', "2", (yargs) => {
+  .command('$0 <contract> <slot> [options...]', "2", (yargs) => {
     yargs.positional('contract', {
       describe: chalk.cyan('Contract address to query storage from'),
       type: 'string',
@@ -27,7 +27,8 @@ const yargsInstance = setupYargs(yargs(process.argv.slice(2)))
       type: 'string',
       demandOption: true
     })
-    .positional('block', {
+    .option('h', {
+      alias: 'block-height',
       describe: chalk.cyan('Block number or "latest"'),
       type: 'string',
       default: 'latest'
@@ -52,7 +53,7 @@ const yargsInstance = setupYargs(yargs(process.argv.slice(2)))
       default: 1
     })
     .example('$0 0x1234... 0', `${chalk.green('Get storage at slot 0')}`)
-    .example('$0 --chain polygon 0x1234... 0x1 1000000', `${chalk.green('Get storage at slot 0x1 at block 1000000 on Polygon')}`)
+    .example('$0 --chain polygon 0x1234... 0x1 --block-height 1000000', `${chalk.green('Get storage at slot 0x1 at block 1000000 on Polygon')}`)
     .example('$0 0x1234... 0 --type decimal', `${chalk.green('Get storage at slot 0 and convert to decimal')}`)
     .example('$0 0x1234... 0 -t address', `${chalk.green('Get storage at slot 0 and format as address')}`)
     .example('$0 0x1234... 0 --map-key 123', `${chalk.green('Get storage for mapping at slot 0 with key 123 (treated as uint256)')}`)
@@ -85,6 +86,9 @@ if (!argv.contract || !argv.slot) {
   yargsInstance.showHelp();
   process.exit(1);
 }
+
+// Use blockHeight option instead of positional block argument
+const blockHeight = argv.blockHeight || 'latest';
 
 // Parse the slot to bytes32 format
 let slotToQuery = parseSlotToBytes32(argv.slot);
@@ -128,7 +132,7 @@ const fetchSlot = async (slot) => {
   const body = {
     jsonrpc: "2.0",
     method: "eth_getStorageAt",
-    params: [argv.contract, slot, argv.block],
+    params: [argv.contract, slot, blockHeight],
     id: 1
   };
 
