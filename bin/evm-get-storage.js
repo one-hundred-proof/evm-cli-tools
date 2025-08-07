@@ -45,6 +45,12 @@ const yargsInstance = setupYargs(yargs(process.argv.slice(2)))
       type: 'string',
       array: true
     })
+    .option('n', {
+      alias: 'num',
+      describe: chalk.cyan('Number of contiguous slots to show'),
+      type: 'number',
+      default: 1
+    })
     .example('$0 0x1234... 0', `${chalk.green('Get storage at slot 0')}`)
     .example('$0 --chain polygon 0x1234... 0x1 1000000', `${chalk.green('Get storage at slot 0x1 at block 1000000 on Polygon')}`)
     .example('$0 0x1234... 0 --type decimal', `${chalk.green('Get storage at slot 0 and convert to decimal')}`)
@@ -52,6 +58,7 @@ const yargsInstance = setupYargs(yargs(process.argv.slice(2)))
     .example('$0 0x1234... 0 --map-key 123', `${chalk.green('Get storage for mapping at slot 0 with key 123 (treated as uint256)')}`)
     .example('$0 0x1234... 0 -k "address(0x1234...)"', `${chalk.green('Get storage for mapping at slot 0 with address key')}`)
     .example('$0 0x1234... 0 -k "address(0x1234...)" -k 123', `${chalk.green('Get storage for nested mapping at slot 0 with address and uint256 keys')}`)
+    .example('$0 0x1234... 0 --num 5', `${chalk.green('Get storage for 5 contiguous slots starting at slot 0')}`)
 })
 
 
@@ -105,32 +112,118 @@ const keysDisplay = argv.mapKey && argv.mapKey.length > 0
   ? ' with keys ' + argv.mapKey.map(k => chalk.bold(k)).join(', ') 
   : '';
 
-console.log(chalk.blue(`Storage at slot ${chalk.bold(argv.slot)}${keysDisplay}:`));
+// Determine how many slots to query
+const numSlots = argv.num || 1;
+
+if (numSlots > 1) {
+  console.log(chalk.blue(`Storage at ${numSlots} contiguous slots starting at ${chalk.bold(argv.slot)}${keysDisplay}:`));
+} else {
+  console.log(chalk.blue(`Storage at slot ${chalk.bold(argv.slot)}${keysDisplay}:`));
+}
 
 const url = `${rpcPrefix}/${apiKey}`;
-const body = {
-  jsonrpc: "2.0",
-  method: "eth_getStorageAt",
-  params: [ argv.contract, slotToQuery, argv.block],
-  id: 1
+
+// Function to fetch a single slot
+const fetchSlot = async (slot) => {
+  const body = {
+    jsonrpc: "2.0",
+    method: "eth_getStorageAt",
+    params: [argv.contract, slot, argv.block],
+    id: 1
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    const data = await response.json();
+    return data.result;
+  } catch (error) {
+    console.error('Error fetching storage:', error);
+    console.error(chalk.red(`Have you configured your RPC endpoint correctly in ${CONFIG_PATH_DISPLAY}?`));
+    process.exit(1);
+  }
 };
 
-fetch(url, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(body)
-})
-  .then(response => response.json())
-  .then(data => {
+// Fetch all requested slots
+(async () => {
+  try {
     let choiceHash = { "h": "hex", "d": "decimal", "a": "address"};
-    let typ = choiceHash[argv.type] ? choiceHash[argv.type] : argv.type
-    const formattedResult = formatBytes32(data.result, typ);
-    console.log(formattedResult);
-  })
-  .catch(error => {
-    console.error('Error fetching storage:', error);
-    console.error(chalk.red(`Have you configered your RPC endpoint correctly in ${CONFIG_PATH_DISPLAY}?`));
+    let typ = choiceHash[argv.type] ? choiceHash[argv.type] : argv.type;
+    
+    for (let i = 0; i < numSlots; i++) {
+      // Calculate the current slot
+      let currentSlot;
+      if (i === 0) {
+        // First slot is the one we already calculated
+        currentSlot = slotToQuery;
+      } else {
+        // For subsequent slots, we need to calculate based on the base slot + i
+        if (argv.mapKey && argv.mapKey.length > 0) {
+          // For mappings, we need to recalculate with the incremented slot
+          let baseSlot;
+          if (argv.slot.startsWith('0x')) {
+            // Handle hex slots
+            baseSlot = BigInt(argv.slot) + BigInt(i);
+            baseSlot = '0x' + baseSlot.toString(16);
+          } else {
+            // Handle decimal slots
+            baseSlot = BigInt(argv.slot) + BigInt(i);
+            baseSlot = baseSlot.toString();
+          }
+          
+          // Recalculate the slot with mapping keys
+          let tempSlot = baseSlot;
+          for (let j = 0; j < argv.mapKey.length; j++) {
+            tempSlot = encodeStorageSlot(tempSlot, argv.mapKey[j]);
+          }
+          currentSlot = tempSlot;
+        } else {
+          // For regular slots, just add i to the original slot (in hex)
+          if (slotToQuery.startsWith('0x')) {
+            // Handle hex slots
+            currentSlot = BigInt(slotToQuery) + BigInt(i);
+            currentSlot = '0x' + currentSlot.toString(16);
+          } else {
+            // Handle decimal slots
+            currentSlot = BigInt(slotToQuery) + BigInt(i);
+            currentSlot = currentSlot.toString();
+          }
+        }
+      }
+      
+      // Fetch and display the slot
+      const result = await fetchSlot(currentSlot);
+      const formattedResult = formatBytes32(result, typ);
+      
+      if (numSlots > 1) {
+        // For multiple slots, show which slot we're displaying
+        if (i === 0) {
+          console.log(`${chalk.cyan(`Slot ${argv.slot}:`)} ${formattedResult}`);
+        } else {
+          let displaySlot;
+          if (argv.slot.startsWith('0x')) {
+            // Handle hex slots
+            displaySlot = BigInt(argv.slot) + BigInt(i);
+            displaySlot = '0x' + displaySlot.toString(16);
+          } else {
+            // Handle decimal slots
+            displaySlot = BigInt(argv.slot) + BigInt(i);
+            displaySlot = displaySlot.toString();
+          }
+          console.log(`${chalk.cyan(`Slot ${displaySlot}:`)} ${formattedResult}`);
+        }
+      } else {
+        // For a single slot, just show the result
+        console.log(formattedResult);
+      }
+    }
+  } catch (error) {
+    console.error('Error:', error);
     process.exit(1);
-  });
+  }
+})();

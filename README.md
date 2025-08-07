@@ -102,6 +102,7 @@ $ evm-get-storage <contract> <slot> [block]
 - `block`: Block number or "latest" (defaults to "latest")
 - `--type, -t`: Output format type (hex, decimal, address)
 - `--map-key, -k`: Mapping key to encode with the slot (supports value expressions)
+- `--num, -n`: Number of contiguous slots to show (defaults to 1)
 
 **Examples:**
 ```bash
@@ -116,6 +117,9 @@ evm-get-storage 0x1234abcd... 0 --map-key 123
 
 # Get storage for mapping at slot 0 with address key
 evm-get-storage 0x1234abcd... 0 --map-key "address(0x1234...)"
+
+# Get storage for 5 contiguous slots starting at slot 0
+evm-get-storage 0x1234abcd... 0 --num 5
 ```
 
 #### Solidity Expression Parser for Mapping Keys
