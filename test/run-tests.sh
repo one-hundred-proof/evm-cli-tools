@@ -29,3 +29,6 @@ rm -rf "$CONTRACT_DIR" "$TMPFILE"
 echo -e "\n${BRIGHT_MAGENTA}[+] evm-get-storage${RESET}"
 ./evm-get-storage.js --chain base 0xeb8A7B0184373550DCAa79156812F5d33e998C1E 20 -k "address(0x40461291347e1eCbb09499F3371D3f17f10d7159)"
 
+./evm-get-storage.js --chain ethereum 0xbbbbbbbbbb9cc5e90e3b3af64bdaf62c37eeffcb 2 \
+    -k "0x5f8a138ba332398a9116910f4d5e5dcd9b207024c5290ce5bc87bc2dbd8e4a86" \
+    -k "0x9a8bC3B04b7f3D87cfC09ba407dCED575f2d61D8" -n 3 -t d -b 23085879
