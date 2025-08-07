@@ -201,22 +201,8 @@ const fetchSlot = async (slot) => {
       const formattedResult = formatBytes32(result, typ);
       
       if (numSlots > 1) {
-        // For multiple slots, show which slot we're displaying
-        if (i === 0) {
-          console.log(`${chalk.cyan(`Slot ${argv.slot}:`)} ${formattedResult}`);
-        } else {
-          let displaySlot;
-          if (argv.slot.startsWith('0x')) {
-            // Handle hex slots
-            displaySlot = BigInt(argv.slot) + BigInt(i);
-            displaySlot = '0x' + displaySlot.toString(16);
-          } else {
-            // Handle decimal slots
-            displaySlot = BigInt(argv.slot) + BigInt(i);
-            displaySlot = displaySlot.toString();
-          }
-          console.log(`${chalk.cyan(`Slot ${displaySlot}:`)} ${formattedResult}`);
-        }
+        // For multiple slots, show the full bytes32 slot value
+        console.log(`${chalk.cyan(`Slot ${chalk.bold(currentSlot)}:`)} ${formattedResult}`);
       } else {
         // For a single slot, just show the result
         console.log(formattedResult);
