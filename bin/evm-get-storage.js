@@ -125,9 +125,9 @@ const keysDisplay = argv.mapKey && argv.mapKey.length > 0
 const numSlots = argv.num || 1;
 
 if (numSlots > 1) {
-  console.log(chalk.blue(`Storage at ${numSlots} contiguous slots starting at ${chalk.bold(argv.slot)}${keysDisplay}:`));
+  console.error(chalk.blue(`Storage at ${numSlots} contiguous slots starting at ${chalk.bold(argv.slot)}${keysDisplay}:`));
 } else {
-  console.log(chalk.blue(`Storage at slot ${chalk.bold(argv.slot)}${keysDisplay}:`));
+  console.error(chalk.blue(`Storage at slot ${chalk.bold(argv.slot)}${keysDisplay}:`));
 }
 
 const url = `${rpcPrefix}/${apiKey}`;
