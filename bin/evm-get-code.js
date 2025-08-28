@@ -52,6 +52,7 @@ if (!argv.address) {
 }
 
 // Get the contract source code
+console.error(chalk.blue(`Getting source code for ${chalk.bold(argv.address)}...`));
 const result = await getSourceFilesFromAddress(argv.address, scanApiDomain, scanApiKey, chainId);
 getFilesRecursively(result.dir);
 console.error(chalk.yellow(`Files saved in ${chalk.bold(result.dir)}`));
