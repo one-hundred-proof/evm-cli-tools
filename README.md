@@ -86,7 +86,7 @@ evm-get-code <address>
 evm-get-code 0x1234abcd...
 ```
 
-The tool will download all source files and save them to a directory named after the contract. If a proxy contract is detected, it will automatically fetch the implementation contract code as well and save it to a separate directory.
+The tool will download all source files and save them to a directory named after the contract, including the timestamp of the contract's creation. If a proxy contract is detected, it will automatically fetch the implementation contract code as well and save it to a separate directory.
 
 ### `evm-get-storage`
 
