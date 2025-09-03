@@ -53,7 +53,7 @@ if (!argv.address) {
 
 // Get the contract source code
 console.error(chalk.blue(`Getting source code for ${chalk.bold(argv.address)}...`));
-const result = await getSourceFilesFromAddress(argv.address, scanApiDomain, scanApiKey, chainId);
+const result = await getSourceFilesFromAddress(argv.address, scanApiDomain, scanApiKey, chainId, null, chainName);
 getFilesRecursively(result.dir);
 console.error(chalk.yellow(`Files saved in ${chalk.bold(result.dir)}`));
 
@@ -66,7 +66,8 @@ if (result.implementationAddress) {
     scanApiDomain,
     scanApiKey,
     chainId,
-    argv.address
+    argv.address,
+    chainName
   );
 
   getFilesRecursively(implResult.dir);
